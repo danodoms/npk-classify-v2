@@ -5,7 +5,7 @@ import {
     useCameraDevice,
     useCameraPermission,
 } from "react-native-vision-camera";
-import {Image} from 'react-native'
+import {Image, View} from 'react-native'
 /*import {useResizePlugin} from "vision-camera-resize-plugin";*/
 import {VStack} from "@/components/ui/vstack";
 import { Text } from '@/components/ui/text';
@@ -21,11 +21,15 @@ import {
     ButtonGroup,
 } from '@/components/ui/button';
 import {SaveFormat} from "expo-image-manipulator";
+import {Box} from "@/components/ui/box";
+import ScanResultDrawer from "@/components/ScanResultDrawer";
 
 
 export default function ScanScreen() {
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isTfReady, setIsTfReady] = useState(false);
     const [classification, setClassification] = useState<string  | null>(null);
+    const [confidence, setConfidence] = useState<string | null>(null);
     const [model, setModel] = useState<TensorflowModel | null>(null);
     const cameraRef = useRef<Camera | null>(null);
     const [capturedImageUri, setCapturedImageUri] = useState<string | null>(null); // To hold the image URI
@@ -43,6 +47,16 @@ export default function ScanScreen() {
         // Update classification state
         setClassification(`${result.className} (Score: ${result.maxValue.toFixed(6)})`); // Optionally include the score
     })*/
+
+
+      const performClassification = ((outputs:{}) => {
+          const result = getMaxClassification(outputs, plantDiseaseClasses)
+
+          setConfidence(result.maxValue.toFixed(6))
+
+          // Update classification state
+          setClassification(`${result.className} (Score: ${result.maxValue.toFixed(6)})`); // Optionally include the score
+      })
 
     const getMaxClassification = (outputs, outputClasses:object) => {
         // Find the key of the highest value
@@ -175,8 +189,9 @@ export default function ScanScreen() {
         console.log("Starting Classification");
         const prediction = await model.run([imageTensor])
         console.log(prediction)
+        setIsDrawerOpen(true)
 
-       /* await runClassification(prediction[0])*/
+        await performClassification(prediction[0])
 
 
         console.log("Done, Image Classified")
@@ -218,15 +233,27 @@ export default function ScanScreen() {
 
 
     return (
-        <VStack>
-            <Camera
-                className="absolute"
-                device={device}
-                isActive={true}
-                ref={cameraRef}
-                photo={true}
-                /*  frameProcessor={frameProcessor}*/
-            />
+        <VStack className="bg-green p-4 outline-red-500 outline outline-1 h-full relative">
+
+
+                <Camera
+                    device={device}
+                     style={{
+                         position: 'absolute', // This makes the component absolutely positioned
+                         top: 0,              // Adjust these values as needed
+                         left: 0,
+                         right: 0,
+                         bottom: 0,
+                     }}
+                    isActive={true}
+                    ref={cameraRef}
+                    photo={true}
+                    /*  frameProcessor={frameProcessor}*/
+                />
+
+
+
+
 
             {/* Image Preview */}
             {capturedImageUri && (
@@ -242,13 +269,12 @@ export default function ScanScreen() {
                 </Text>
             )}
 
-            <VStack >
-                <Button onPress={captureAndClassify} disabled={!isTfReady}>
-                    {isTfReady ? <Text>Capture and Classify</Text> : <Text>Waiting for Tensorflow...</Text>}
-                </Button>
-            </VStack>
 
+            <Button onPress={captureAndClassify} disabled={!isTfReady} size="lg" variant="solid" action="primary" className="rounded-lg">
+                {isTfReady ? <ButtonText>Classify</ButtonText> : <ButtonText>Waiting for Tensorflow...</ButtonText>}
+            </Button>
 
+            <ScanResultDrawer drawerState={{isDrawerOpen,setIsDrawerOpen, imageUri:capturedImageUri, classification, confidence}} />
         </VStack>
     );
 }
