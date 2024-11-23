@@ -27,6 +27,7 @@ import ScanResultDrawer from "@/components/ScanResultDrawer";
 export default function ScanScreen() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isTfReady, setIsTfReady] = useState(false);
+  const [isModelPredicting, setIsModelPredicting] = useState(false);
   const [classification, setClassification] = useState<string | null>(null);
   const [confidence, setConfidence] = useState<string | null>(null);
   const [model, setModel] = useState<TensorflowModel | null>(null);
@@ -47,7 +48,7 @@ export default function ScanScreen() {
   const performClassification = (outputs: {}) => {
     const result = getMaxClassification(outputs, plantDiseaseClasses);
 
-    setConfidence(result.maxValue.toFixed(6));
+    setConfidence((result.maxValue * 100).toFixed(2) + "%");
 
     // Update classification state
     setClassification(result.className);
@@ -179,14 +180,17 @@ export default function ScanScreen() {
       console.log("Image Resized");
 
       setCapturedImageUri("file://" + manipulatedImage.uri);
+      setIsModelPredicting(true);
 
       // Convert image into correct format
       convertImageToRgb(manipulatedImage.uri, "float32")
         .then((imageTensor) => {
           console.log("Starting Classification");
+
           return model.run([imageTensor]);
         })
         .then((prediction) => {
+          setIsModelPredicting(false);
           console.log(prediction);
           return performClassification(prediction[0]);
         })
@@ -202,58 +206,87 @@ export default function ScanScreen() {
     }
   };
 
-  const convertImageToRgb = async (image, format: "uint8" | "float32") => {
-    const convertedArray = await convertToRGB(image);
-    console.log("convertedArray:", convertedArray);
+  const convertImageToRgb = async (
+    imageUri: string,
+    format: "uint8" | "float32"
+  ): Promise<Float32Array | Uint8Array> => {
+    try {
+      const convertedArray = await convertToRGB(imageUri); // Assumes this returns a flat RGB array
+      console.log("Converted Array:", convertedArray);
 
-    return new Promise((resolve, reject) => {
-      try {
-        // Process in chunks to avoid blocking the main thread
-        let red: number[] = [];
-        let green: number[] = [];
-        let blue: number[] = [];
-        const chunkSize = 1000; // Adjust based on performance needs
-
-        const processChunk = (startIndex: number) => {
-          for (
-            let index = startIndex;
-            index < Math.min(startIndex + chunkSize, convertedArray.length);
-            index += 3
-          ) {
-            red.push(convertedArray[index] / 255);
-            green.push(convertedArray[index + 1] / 255);
-            blue.push(convertedArray[index + 2] / 255);
-          }
-
-          if (startIndex + chunkSize < convertedArray.length) {
-            // Continue processing the next chunk
-            setTimeout(() => processChunk(startIndex + chunkSize), 0);
-          } else {
-            // Finalize and resolve the promise
-            const finalArray = [...red, ...green, ...blue];
-            console.log("normalized array: ", finalArray);
-
-            if (format === "float32") {
-              resolve(new Float32Array(finalArray));
-            } else if (format === "uint8") {
-              resolve(new Uint8Array(finalArray));
-            } else {
-              reject(
-                new Error("Invalid format specified. Use 'float32' or 'uint8'.")
-              );
-            }
-          }
-        };
-
-        processChunk(0); // Start processing
-      } catch (error) {
-        reject(error);
+      // Validate the converted array
+      if (!Array.isArray(convertedArray) || convertedArray.length % 3 !== 0) {
+        throw new Error(
+          "Invalid RGB array. The input array length must be divisible by 3."
+        );
       }
-    });
+
+      const normalizeValue = (value: number) => value / 255; // Normalization function
+      const finalArray: number[] = [];
+
+      // Directly process the array
+      for (let i = 0; i < convertedArray.length; i += 3) {
+        finalArray.push(
+          normalizeValue(convertedArray[i]), // Red
+          normalizeValue(convertedArray[i + 1]), // Green
+          normalizeValue(convertedArray[i + 2]) // Blue
+        );
+
+        // Yield control to prevent blocking
+        if (i % 3000 === 0) {
+          await new Promise((resolve) => setTimeout(resolve, 0));
+        }
+      }
+
+      console.log("Normalized Array:", finalArray);
+
+      // Return the desired format
+      if (format === "float32") {
+        return new Float32Array(finalArray);
+      } else if (format === "uint8") {
+        return new Uint8Array(finalArray.map((v) => Math.round(v * 255))); // Convert back to 0-255
+      } else {
+        throw new Error("Invalid format specified. Use 'float32' or 'uint8'.");
+      }
+    } catch (error) {
+      console.error("Error in convertImageToRgb:", error);
+      throw error; // Propagate the error for better debugging
+    }
   };
 
+  function RenderButtonComponent() {
+    if (!isTfReady)
+      return (
+        <Text size="lg" className="text-center font-bold">
+          Loading AI Model...
+        </Text>
+      );
+
+    if (isModelPredicting)
+      return (
+        <Text size="lg" className="text-center font-bold">
+          Classifying Image...
+        </Text>
+      );
+
+    return (
+      <Button
+        onPress={captureAndClassify}
+        size="lg"
+        variant="solid"
+        action="primary"
+        className="rounded-lg "
+      >
+        <ButtonText>Classify</ButtonText>
+      </Button>
+    );
+  }
+
   return (
-    <VStack className="bg-green p-4 outline-red-500 outline outline-1 h-full relative">
+    <VStack
+      className="bg-green p-4 outline-red-500 outline outline-1 h-full relative"
+      reversed={true}
+    >
       <Camera
         device={device}
         style={{
@@ -276,23 +309,7 @@ export default function ScanScreen() {
         </VStack>
       )}
 
-      {/* Display Classification Result */}
-      {classification && <Text>{classification}</Text>}
-
-      <Button
-        onPress={captureAndClassify}
-        disabled={!isTfReady}
-        size="lg"
-        variant="solid"
-        action="primary"
-        className="rounded-lg"
-      >
-        {isTfReady ? (
-          <ButtonText>Classify</ButtonText>
-        ) : (
-          <ButtonText>Waiting for Tensorflow...</ButtonText>
-        )}
-      </Button>
+      <RenderButtonComponent />
 
       <ScanResultDrawer
         drawerState={{

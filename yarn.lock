@@ -8717,10 +8717,10 @@ react-native-css-interop@0.0.36, react-native-css-interop@^0.0.36:
     babel-plugin-tester "^11.0.4"
     lightningcss "1.22.0"
 
-react-native-fast-tflite@^1.5.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/react-native-fast-tflite/-/react-native-fast-tflite-1.5.0.tgz#4fb530f58c8bc5e9eaf2f986f1b47b0b8d34df12"
-  integrity sha512-nbE7N/mGnHCJzJj2rTHhnks0OHfg1B02jzjEAhTG/gHAG6me3EcWJZRwGl+PqQKvOS9pBSGFjtgvmOYJiOupQg==
+react-native-fast-tflite@1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/react-native-fast-tflite/-/react-native-fast-tflite-1.3.0.tgz#1f8834b9b04b19126eec836555938a0199601e27"
+  integrity sha512-Zqt2lDYGc0Jc6Q1zt1+Kdg9I5aMYkxgmU9g5njHPI8N4nteJTQFPDs073yHJO8ooDO9JZ8zdR8Jl2oaoMiPrFA==
 
 react-native-gesture-handler@~2.16.1:
   version "2.16.2"
