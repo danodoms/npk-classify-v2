@@ -9,7 +9,15 @@ import {
 
 import { Text } from "@/src/components/ui/text";
 
-import { ChartScatter, Leaf, Scan } from "lucide-react-native";
+import {
+  Bot,
+  ChartScatter,
+  Leaf,
+  Scan,
+  Circle,
+  Sparkles,
+  Sparkle,
+} from "lucide-react-native";
 import { VStack } from "@/src/components/ui/vstack";
 import { Box } from "@/src/components/ui/box";
 import { Heading } from "@/src/components/ui/heading";
@@ -18,20 +26,40 @@ import React from "react";
 import { HStack } from "@/src/components/ui/hstack";
 import { useColorScheme } from "@/src/hooks/useColorScheme";
 import { getPrimaryColor } from "@expo/config-plugins/build/android/PrimaryColor";
+import {
+  Avatar,
+  AvatarBadge,
+  AvatarFallbackText,
+  AvatarImage,
+} from "@/src/components/ui/avatar";
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
 
   return (
     <VStack className="p-4 gap-4 h-full bg-background-0">
-      <Box className=" rounded-md mb-4">
-        <Heading className="" size="3xl">
-          XR Vision
-        </Heading>
-        <Text className="text-left">
-          Classify Rice NPK deficiencies with your camera!
-        </Text>
-      </Box>
+      <HStack className=" rounded-md mb-4 justify-between flex">
+        <HStack className="gap-1">
+          <Heading className="flex flex-auto" size="3xl">
+            XR Vision
+          </Heading>
+          <Sparkle color="white" className="size-xs" />
+        </HStack>
+
+        <Avatar size="md" className="flex">
+          <AvatarFallbackText>John Doe</AvatarFallbackText>
+          <AvatarImage
+            source={{
+              uri: "https://avatars.githubusercontent.com/u/165539900?v=4",
+            }}
+          />
+          <AvatarBadge />
+        </Avatar>
+
+        {/*<Text className="text-left">
+          Classify Rice NPK deficiencies with your camera
+        </Text>*/}
+      </HStack>
 
       <HStack className="flex gap-4">
         <ChartScatter color="white" className="size-sm" />
