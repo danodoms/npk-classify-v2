@@ -5,6 +5,7 @@ import { RESULTS_TABLE } from "@/src/powersync/Schema";
 export function useDatabase() {
   const { db } = useSystem();
   const [error, setError] = useState(null);
+  // const { userID } = await supabaseConnector.fetchCredentials();
 
   const addResult = async (
     resultId: string,

@@ -16,71 +16,55 @@ import { Image } from "@/src/components/ui/image";
 import { Text } from "@/src/components/ui/text";
 import { ScrollView } from "react-native";
 import { HStack } from "@/src/components/ui/hstack";
+import { useQuery } from "@powersync/react";
 
 export default function ResultsScreen() {
   const [result, setResult] = useState("");
   const { supabaseConnector, db } = useSystem();
-  const [results, setResults] = useState<Result[]>([]);
+  /*const [results, setResults] = useState<Result[]>([]);*/
 
-  useEffect(() => {
-    loadResults();
-  }, []);
-
-  const loadResults = async () => {
-    const dbResults = await db.selectFrom(RESULTS_TABLE).selectAll().execute();
-    setResults(dbResults);
-  };
-
-  const addResult = async () => {
-    // const { userID } = await supabaseConnector.fetchCredentials();
-    const resultId = Crypto.randomUUID();
-
-    await db
-      .insertInto(RESULTS_TABLE)
-      .values({
-        id: resultId,
-        created_at: null,
-        timestamp: "1000",
-        user_uuid: null,
-      })
-      .execute();
-
-    setResult("");
-    loadResults();
-  };
+  const { data: results } = useQuery(db.selectFrom(RESULTS_TABLE).selectAll());
 
   // Reset the database
   const resetResults = async () => {
     await db.deleteFrom(RESULTS_TABLE).execute();
-    loadResults();
+  };
+
+  const listFiles = async () => {
+    try {
+      if (!FileSystem.documentDirectory) return;
+
+      // Get the list of files in the document directory
+      const files = await FileSystem.readDirectoryAsync(
+        FileSystem.documentDirectory + "images"
+      );
+      console.log("Files in documentDirectory:", files);
+    } catch (error) {
+      console.error("Error reading files:", error);
+    }
   };
 
   return (
-    <VStack>
-      {/*<Button onPress={addResult}>
-        <ButtonText>Classify</ButtonText>
-      </Button>
-*/}
-      {/* Reset Button */}
-      <Button onPress={resetResults}>
-        <ButtonText>Reset Database</ButtonText>
-      </Button>
+    <VStack className="p-4 gap-4">
+      {/*<Text>Total Results: {results.length}</Text>
+      <HStack className="gap-4 items-center w-full">
+        <Button onPress={listFiles} className="flex flex-auto">
+          <ButtonText>List Files</ButtonText>
+        </Button>
 
-      {/* Dynamic Counter */}
-      <Text>Total Results: {results.length}</Text>
+        <Button onPress={resetResults} className="flex flex-auto">
+          <ButtonText>Reset Database</ButtonText>
+        </Button>
+      </HStack>*/}
 
       <VStack>
         <ScrollView>
           {results.map((result) => (
-            <HStack key={result.id} className="p-4 gap-4">
+            <HStack key={result.id} className="pt-4 gap-4">
               <Image
                 className="rounded-md border-white-50 border-2"
                 source={{
-                  uri:
-                    FileSystem.documentDirectory +
-                    "images/" +
-                    result.id +
-                    ".jpg",
+                  uri: FileSystem.documentDirectory + "images/" + result.id,
                 }}
                 alt="image-result"
               ></Image>
