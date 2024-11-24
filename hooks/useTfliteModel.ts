@@ -4,6 +4,8 @@ import { TensorflowModel } from "react-native-fast-tflite";
 import { Camera } from "react-native-vision-camera";
 import { convertToRGB } from "react-native-image-to-rgb";
 
+type imageDataType = "uint8" | "float32";
+
 export function useTfliteModel() {
   const [isModelPredicting, setIsModelPredicting] = useState(false);
   const [classification, setClassification] = useState<string | null>(null);
@@ -11,17 +13,25 @@ export function useTfliteModel() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [model, setModel] = useState<TensorflowModel | null>(null);
 
-  const runModelPrediction = (imageUri: string, model: TensorflowModel) => {
-    convertImageToRgb(imageUri, "float32")
+  const runModelPrediction = (
+    imageUri: string,
+    dataType: imageDataType,
+    outputClasses: object
+  ) => {
+    if (!model) return console.log("Model is not ready");
+
+    /*const modelInputs = model.inputs[0];
+    const modelDataType = modelInputs;*/
+
+    convertImageToRgb(imageUri, dataType)
       .then((imageTensor) => {
         console.log("Starting Classification");
-
         return model.run([imageTensor]);
       })
       .then((prediction) => {
         setIsModelPredicting(false);
-        console.log(prediction);
-        return performClassification(prediction[0]);
+        console.log("MODEL OUTPUT PREDICTION: ", prediction);
+        return performClassification(prediction[0], outputClasses);
       })
       .then(() => {
         console.log("Done, Image Classified");
@@ -34,11 +44,11 @@ export function useTfliteModel() {
 
   const convertImageToRgb = async (
     imageUri: string,
-    format: "uint8" | "float32"
+    format: imageDataType
   ): Promise<Float32Array | Uint8Array> => {
     try {
       const convertedArray = await convertToRGB(imageUri); // Assumes this returns a flat RGB array
-      console.log("Converted Array:", convertedArray);
+      /*console.log("Converted Array:", convertedArray);*/
 
       // Validate the converted array
       if (!Array.isArray(convertedArray) || convertedArray.length % 3 !== 0) {
@@ -64,7 +74,7 @@ export function useTfliteModel() {
         }
       }
 
-      console.log("Normalized Array:", finalArray);
+      /*console.log("Normalized Array:", finalArray);*/
 
       // Return the desired format
       if (format === "float32") {
@@ -80,15 +90,21 @@ export function useTfliteModel() {
     }
   };
 
-  const performClassification = (outputs: {}) => {
-    const result = getMaxClassification(outputs, plantDiseaseClasses);
+  const performClassification = (
+    outputs: Record<any, any>,
+    outputClasses: Record<any, any>
+  ) => {
+    const result = getMaxClassification(outputs, outputClasses);
     setConfidence((result.maxValue * 100).toFixed(2) + "%");
 
     // Update classification state
     setClassification(result.className);
   };
 
-  const getMaxClassification = (outputs, outputClasses: object) => {
+  const getMaxClassification = (
+    outputs: Record<any, any>,
+    outputClasses: Record<any, any>
+  ) => {
     // Find the key of the highest value
     const maxKey = Object.keys(outputs).reduce((a, b) =>
       outputs[a] > outputs[b] ? a : b
@@ -98,7 +114,7 @@ export function useTfliteModel() {
     const maxValue = outputs[maxKey];
 
     // Get the disease name using the key
-    const className = outputClasses[maxKey];
+    const className: string = String(outputClasses[maxKey]);
 
     return {
       className,
@@ -115,6 +131,8 @@ export function useTfliteModel() {
     setConfidence,
     isDrawerOpen,
     setIsDrawerOpen,
+    model,
+    setModel,
     runModelPrediction,
   };
 }
