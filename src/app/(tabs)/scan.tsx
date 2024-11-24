@@ -20,7 +20,7 @@ import {
 import { SaveFormat } from "expo-image-manipulator";
 import { Box } from "@/src/components/ui/box";
 import ScanResultDrawer from "@/src/components/ScanResultDrawer";
-import { useTfliteModel } from "@/hooks/useTfliteModel";
+import { useTfliteModel } from "@/src/hooks/useTfliteModel";
 
 export default function ScanScreen() {
   const {
