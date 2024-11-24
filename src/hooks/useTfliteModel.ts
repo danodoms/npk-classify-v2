@@ -9,7 +9,7 @@ type imageDataType = "uint8" | "float32";
 export function useTfliteModel() {
   const [isModelPredicting, setIsModelPredicting] = useState(false);
   const [classification, setClassification] = useState<string | null>(null);
-  const [confidence, setConfidence] = useState<string | null>(null);
+  const [confidence, setConfidence] = useState<number | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [model, setModel] = useState<TensorflowModel | null>(null);
 
@@ -95,7 +95,7 @@ export function useTfliteModel() {
     outputClasses: Record<any, any>
   ) => {
     const result = getMaxClassification(outputs, outputClasses);
-    setConfidence((result.maxValue * 100).toFixed(2) + "%");
+    setConfidence(Number((result.maxValue * 100).toFixed(2)));
 
     // Update classification state
     setClassification(result.className);

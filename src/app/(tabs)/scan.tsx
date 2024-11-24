@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { loadTensorflowModel, TensorflowModel } from "react-native-fast-tflite";
+import {
+  loadTensorflowModel,
+  TensorflowModel,
+  useTensorflowModel,
+} from "react-native-fast-tflite";
 import {
   Camera,
   useCameraDevice,
@@ -22,8 +26,12 @@ import { Box } from "@/src/components/ui/box";
 import ScanResultDrawer from "@/src/components/ScanResultDrawer";
 import { useTfliteModel } from "@/src/hooks/useTfliteModel";
 import LottieView from "lottie-react-native";
+import { saveImageToAppData } from "@/src/lib/imageUtil";
+import { useDatabase } from "@/src/hooks/useDatabase";
+import * as Crypto from "expo-crypto";
 
 export default function ScanScreen() {
+  const { addResult } = useDatabase();
   const {
     isDrawerOpen,
     setIsDrawerOpen,
@@ -116,12 +124,23 @@ export default function ScanScreen() {
 
     console.log("Image Resized");
 
-    setCapturedImageUri("file://" + manipulatedImage.uri);
+    setCapturedImageUri(manipulatedImage.uri);
     setIsModelPredicting(true);
 
     // Convert image into correct format
     runModelPrediction(manipulatedImage.uri, "float32", plantDiseaseClasses);
   };
+
+  function saveResultToDatabase() {
+    if (!capturedImageUri) return console.log("No captured image uri");
+    if (!classification) return console.log("No captured classification");
+    if (!confidence) return console.log("No confidence");
+
+    const resultId = Crypto.randomUUID();
+
+    saveImageToAppData(capturedImageUri, resultId);
+    addResult(resultId, classification, confidence);
+  }
 
   function RenderButtonComponent() {
     if (!isTfReady)
@@ -182,6 +201,7 @@ export default function ScanScreen() {
 
       <ScanResultDrawer
         drawerState={{
+          saveResultCallback: saveResultToDatabase,
           isDrawerOpen,
           setIsDrawerOpen,
           imageUri: capturedImageUri,

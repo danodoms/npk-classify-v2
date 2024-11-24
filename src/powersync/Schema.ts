@@ -7,10 +7,8 @@ const results = new Table(
   {
     // id column (text) is automatically included
     created_at: column.text,
-    n_deficiency: column.real,
-    p_deficiency: column.real,
-    k_deficiency: column.real,
-    healthy: column.real,
+    classification: column.text,
+    confidence: column.real,
     timestamp: column.text,
     user_uuid: column.text,
   },

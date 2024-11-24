@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSystem } from "@/src/powersync/System";
 import * as Crypto from "expo-crypto";
+import * as FileSystem from "expo-file-system";
 
 import { RESULTS_TABLE, Result } from "@/src/powersync/Schema";
 import { VStack } from "@/src/components/ui/vstack";
@@ -11,6 +12,7 @@ import {
   ButtonIcon,
   ButtonGroup,
 } from "@/src/components/ui/button";
+import { Image } from "@/src/components/ui/image";
 import { Text } from "@/src/components/ui/text";
 import { ScrollView } from "react-native";
 import { HStack } from "@/src/components/ui/hstack";
@@ -38,10 +40,6 @@ export default function ResultsScreen() {
       .values({
         id: resultId,
         created_at: null,
-        n_deficiency: 10,
-        p_deficiency: 20,
-        k_deficiency: 30,
-        healthy: 40,
         timestamp: "1000",
         user_uuid: null,
       })
@@ -59,10 +57,10 @@ export default function ResultsScreen() {
 
   return (
     <VStack>
-      <Button onPress={addResult}>
+      {/*<Button onPress={addResult}>
         <ButtonText>Classify</ButtonText>
       </Button>
-
+*/}
       {/* Reset Button */}
       <Button onPress={resetResults}>
         <ButtonText>Reset Database</ButtonText>
@@ -74,12 +72,26 @@ export default function ResultsScreen() {
       <VStack>
         <ScrollView>
           {results.map((result) => (
-            <HStack key={result.id}>
-              <Text>N: {result.n_deficiency}</Text>
-              <Text>P: {result.p_deficiency}</Text>
-              <Text>K: {result.k_deficiency}</Text>
-              <Text>Healthy: {result.healthy}</Text>
-              <Text>Timestamp: {result.timestamp}</Text>
+            <HStack key={result.id} className="p-4 gap-4">
+              <Image
+                className="rounded-md border-white-50 border-2"
+                source={{
+                  uri:
+                    FileSystem.documentDirectory +
+                    "images/" +
+                    result.id +
+                    ".jpg",
+                }}
+                alt="image-result"
+              ></Image>
+
+              <VStack>
+                <Text className="font-bold text-lg">
+                  {result.classification}
+                </Text>
+                <Text className="">{result.confidence}%</Text>
+                <Text>{result.timestamp}</Text>
+              </VStack>
             </HStack>
           ))}
         </ScrollView>

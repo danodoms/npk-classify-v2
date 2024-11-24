@@ -22,9 +22,10 @@ interface ScanResultDrawerProps {
   drawerState: {
     isDrawerOpen: boolean;
     setIsDrawerOpen: (open: boolean) => void;
+    saveResultCallback: () => void;
     imageUri: string | null;
     classification: string | null;
-    confidence: string | null;
+    confidence: number | null;
   };
 }
 
@@ -60,7 +61,7 @@ const ScanResultDrawer: React.FC<ScanResultDrawerProps> = ({ drawerState }) => {
           <DrawerBody>
             {drawerState.confidence ? (
               <Text size="xl" className="text-typography-400 mb-4">
-                Confidence: {drawerState.confidence}
+                Confidence: {drawerState.confidence}%
               </Text>
             ) : (
               <Skeleton variant="rounded" className="h-4 w-1/2 mb-4" />
@@ -91,11 +92,12 @@ const ScanResultDrawer: React.FC<ScanResultDrawerProps> = ({ drawerState }) => {
           <DrawerFooter>
             <Button
               onPress={() => {
-                drawerState.setIsDrawerOpen(false);
+                /*drawerState.setIsDrawerOpen(false);*/
+                drawerState.saveResultCallback();
               }}
               className="flex-1"
             >
-              <ButtonText>Close</ButtonText>
+              <ButtonText>Save Result</ButtonText>
             </Button>
           </DrawerFooter>
         </DrawerContent>
