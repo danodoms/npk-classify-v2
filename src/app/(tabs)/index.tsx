@@ -13,6 +13,8 @@ import { Leaf } from "lucide-react-native";
 import { VStack } from "@/src/components/ui/vstack";
 import { Box } from "@/src/components/ui/box";
 import { Heading } from "@/src/components/ui/heading";
+import LottieView from "lottie-react-native";
+import React from "react";
 
 export default function HomeScreen() {
   return (

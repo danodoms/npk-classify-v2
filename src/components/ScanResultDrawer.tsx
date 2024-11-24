@@ -15,6 +15,8 @@ import { Image } from "@/src/components/ui/image";
 import { Skeleton, SkeletonText } from "@/src/components/ui/skeleton";
 import { VStack } from "@/src/components/ui/vstack";
 import { Box } from "@/src/components/ui/box";
+import LottieView from "lottie-react-native";
+import { StyleSheet } from "react-native";
 
 interface ScanResultDrawerProps {
   drawerState: {
@@ -65,14 +67,23 @@ const ScanResultDrawer: React.FC<ScanResultDrawerProps> = ({ drawerState }) => {
             )}
 
             {drawerState.imageUri ? (
-              <Image
-                size="2xl"
-                className="min-h-full min-w-full rounded-md"
-                alt="classification-image"
-                source={{
-                  uri: drawerState.imageUri,
-                }}
-              ></Image>
+              <Box>
+                <Image
+                  size="2xl"
+                  className="min-h-full min-w-full rounded-md"
+                  alt="classification-image"
+                  source={{
+                    uri: drawerState.imageUri,
+                  }}
+                ></Image>
+
+                <LottieView
+                  style={styles.animation}
+                  source={require("@/assets/animations/scan-animation.json")}
+                  autoPlay
+                  loop
+                />
+              </Box>
             ) : (
               <Skeleton variant="rounded" className="h-full w-full" />
             )}
@@ -92,5 +103,16 @@ const ScanResultDrawer: React.FC<ScanResultDrawerProps> = ({ drawerState }) => {
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  animation: {
+    width: 500,
+    height: 250,
+    position: "absolute",
+    alignSelf: "center",
+    flex: 1, // Allows the animation to fill the parent container
+    backgroundColor: "transparent",
+  },
+});
 
 export default ScanResultDrawer;

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { loadTensorflowModel, TensorflowModel } from "react-native-fast-tflite";
 import {
   Camera,
@@ -21,6 +21,7 @@ import { SaveFormat } from "expo-image-manipulator";
 import { Box } from "@/src/components/ui/box";
 import ScanResultDrawer from "@/src/components/ScanResultDrawer";
 import { useTfliteModel } from "@/src/hooks/useTfliteModel";
+import LottieView from "lottie-react-native";
 
 export default function ScanScreen() {
   const {
@@ -112,6 +113,7 @@ export default function ScanScreen() {
       [{ resize: { width: 224, height: 224 } }],
       { format: SaveFormat.JPEG, base64: true }
     );
+
     console.log("Image Resized");
 
     setCapturedImageUri("file://" + manipulatedImage.uri);
