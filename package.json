@@ -16,6 +16,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@azure/core-asynciterator-polyfill": "^1.0.2",
     "@expo/html-elements": "0.4.2",
     "@expo/vector-icons": "^14.0.2",
     "@gluestack-ui/accordion": "^1.0.8",
@@ -47,6 +48,7 @@
     "@gluestack-ui/textarea": "^0.1.24",
     "@gluestack-ui/toast": "^1.0.8",
     "@gluestack-ui/tooltip": "^0.1.35",
+    "@journeyapps/react-native-quick-sqlite": "2.1.0",
     "@legendapp/motion": "^2.4.0",
     "@powersync/kysely-driver": "^1.0.0",
     "@powersync/react-native": "^1.16.0",
