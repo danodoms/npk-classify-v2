@@ -7,14 +7,14 @@ import {
   DrawerCloseButton,
   DrawerBody,
   DrawerFooter,
-} from "@/components/ui/drawer";
-import { Button, ButtonText } from "@/components/ui/button";
-import { Heading } from "@/components/ui/heading";
-import { Text } from "@/components/ui/text";
-import { Image } from "@/components/ui/image";
-import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
-import { VStack } from "@/components/ui/vstack";
-import { Box } from "@/components/ui/box";
+} from "@/src/components/ui/drawer";
+import { Button, ButtonText } from "@/src/components/ui/button";
+import { Heading } from "@/src/components/ui/heading";
+import { Text } from "@/src/components/ui/text";
+import { Image } from "@/src/components/ui/image";
+import { Skeleton, SkeletonText } from "@/src/components/ui/skeleton";
+import { VStack } from "@/src/components/ui/vstack";
+import { Box } from "@/src/components/ui/box";
 
 interface ScanResultDrawerProps {
   drawerState: {

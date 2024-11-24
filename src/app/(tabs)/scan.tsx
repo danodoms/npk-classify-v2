@@ -6,8 +6,8 @@ import {
   useCameraPermission,
 } from "react-native-vision-camera";
 import { Image, View } from "react-native";
-import { VStack } from "@/components/ui/vstack";
-import { Text } from "@/components/ui/text";
+import { VStack } from "@/src/components/ui/vstack";
+import { Text } from "@/src/components/ui/text";
 import { plantDiseaseClasses } from "@/assets/model/tflite/plant-disease/plant-disease-classes";
 import * as ImageManipulator from "expo-image-manipulator";
 import {
@@ -16,10 +16,10 @@ import {
   ButtonSpinner,
   ButtonIcon,
   ButtonGroup,
-} from "@/components/ui/button";
+} from "@/src/components/ui/button";
 import { SaveFormat } from "expo-image-manipulator";
-import { Box } from "@/components/ui/box";
-import ScanResultDrawer from "@/components/ScanResultDrawer";
+import { Box } from "@/src/components/ui/box";
+import ScanResultDrawer from "@/src/components/ScanResultDrawer";
 import { useTfliteModel } from "@/hooks/useTfliteModel";
 
 export default function ScanScreen() {
@@ -54,7 +54,7 @@ export default function ScanScreen() {
 
   const loadModel = async () => {
     const tfliteModel = await loadTensorflowModel(
-      require("../../assets/model/tflite/plant-disease/plant-disease.tflite")
+      require("../../../assets/model/tflite/plant-disease/plant-disease.tflite")
     );
     setModel(tfliteModel);
   };
