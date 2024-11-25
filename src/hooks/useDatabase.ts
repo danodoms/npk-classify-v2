@@ -10,6 +10,17 @@ export function useDatabase() {
 
   const { data: results } = useQuery(db.selectFrom(RESULTS_TABLE).selectAll());
 
+  const { data: topClassifications } = useQuery(
+    db
+      .selectFrom(RESULTS_TABLE) // Table name
+      .select([
+        "classification", // Select the classification column
+        db.fn.count("classification").as("total"), // Count the rows for each classification
+      ])
+      .groupBy("classification") // Group by classification
+      .orderBy("total", "desc") // Order by the total count in descending order
+  );
+
   const addResult = async (
     resultId: string,
     classification: string,
@@ -33,5 +44,5 @@ export function useDatabase() {
     }
   };
 
-  return { addResult, results };
+  return { addResult, results, topClassifications };
 }

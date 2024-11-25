@@ -10,6 +10,8 @@ import {
   Circle,
   Sparkles,
   Sparkle,
+  Image as ImageLucide,
+  GalleryHorizontal,
 } from "lucide-react-native";
 import { VStack } from "@/src/components/ui/vstack";
 import { Box } from "@/src/components/ui/box";
@@ -37,12 +39,16 @@ import {
 import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
 import Pagination from "react-native-reanimated-carousel";
 import { Button, ButtonText } from "@/src/components/ui/button";
+import { FlashList } from "@shopify/flash-list";
+import { Center } from "@/src/components/ui/center";
+import { Skeleton } from "@/src/components/ui/skeleton";
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
-  const width = Dimensions.get("window").width;
-  const { results } = useDatabase();
-  const progress = useSharedValue<number>(0);
+  const { width, height } = Dimensions.get("window");
+  const { results, topClassifications } = useDatabase();
+
+  /*const progress = useSharedValue<number>(0);*/
 
   return (
     <VStack className="p-4 gap-4 h-full bg-background-0 pt-12">
@@ -85,23 +91,47 @@ export default function HomeScreen() {
         </Button>
       </HStack>
 
-      <VStack className="flex gap-4 mb-4">
-        <HStack className="flex gap-4">
-          <Box className="flex flex-1 bg-background-50 rounded-lg p-4">
-            <Text>Nitrogen</Text>
-          </Box>
-          <Box className="flex flex-1 bg-background-50 rounded-lg p-4">
-            <Text>Potassium</Text>
-          </Box>
-        </HStack>
-        <HStack className="flex gap-4">
-          <Box className="flex flex-1 bg-background-50 rounded-lg p-4">
-            <Text>Phosphorus</Text>
-          </Box>
-          <Box className="flex flex-1 bg-background-50 rounded-lg p-4">
-            <Text>Healthy</Text>
-          </Box>
-        </HStack>
+      {/* <VStack className="flex gap-4 mb-4">
+        <Box className="flex flex-auto bg-background-50 rounded-lg p-4 ">
+          <Text className="font-bold">
+            {topClassifications[0].classification}
+          </Text>
+        </Box>
+
+        <Box className="flex flex-auto bg-background-50 rounded-lg p-4">
+          <Text>{topClassifications[1].classification}</Text>
+        </Box>
+
+        <Box className="flex flex-auto bg-background-50 rounded-lg p-4">
+          <Text>{topClassifications[2].classification}</Text>
+        </Box>
+        <Box className="flex flex-1 bg-background-50 rounded-lg p-4">
+          <Text>{topClassifications[3].classification}</Text>
+        </Box>
+      </VStack>*/}
+
+      <VStack className="flex mb-4 h-1/4 relative rounded-lg">
+        <FlashList
+          data={topClassifications}
+          renderItem={({ item }) => (
+            <HStack className="flex flex-auto bg-background-50 rounded-lg p-4 mb-2 align-items-center">
+              <Text className="flex flex-1 font-bold">
+                {item.classification}
+              </Text>
+              <Text className="ml-auto font-bold  rounded-lg">
+                {item.total}
+              </Text>
+            </HStack>
+          )}
+          estimatedItemSize={20}
+          ListEmptyComponent={
+            <Box className="flex bg-background-50 h-full flex-auto rounded-lg p-4">
+              <Text className="text-center flex-auto opacity-50">
+                No data to analyze
+              </Text>
+            </Box>
+          }
+        />
       </VStack>
 
       <HStack className="flex gap-2">
@@ -115,41 +145,69 @@ export default function HomeScreen() {
         </Text>
       </HStack>
 
-      {/*<Box className="flex flex-auto bg-background-50 rounded-lg"></Box>*/}
-
       <Box className="relative flex flex-auto bg-background-50 rounded-lg justify-center h-full overflow-hidden">
-        <Carousel
-          loop
-          width={width}
-          autoPlay={true}
-          data={results}
-          autoPlayInterval={3500}
-          /*mode="parallax"*/
-          pagingEnabled={true}
-          scrollAnimationDuration={1500}
-          onSnapToItem={(index) => console.log("current index:", index)}
-          renderItem={({ item, index }) => (
-            <Box className="relative flex flex-auto bg-background-50 justify-center h-full overflow-hidden">
-              <Text>ahhajdsdujsiadsbdsbajiu</Text>
-              <Image
-                source={{ uri: getScanResultImageUriFromResultId(item.id) }}
-                className="absolute top-0 left-0 w-full h-full"
-                resizeMode="cover"
-                alt="recent-scan"
-              ></Image>
+        {results.length > 0 ? (
+          <Carousel
+            loop
+            width={width}
+            autoPlay={true}
+            data={results}
+            autoPlayInterval={3500}
+            /*mode="parallax"*/
+            pagingEnabled={true}
+            scrollAnimationDuration={1500}
+            onSnapToItem={(index) => console.log("current index:", index)}
+            renderItem={({ item, index }) => (
+              <Box className="relative flex flex-auto bg-background-50 justify-center h-full overflow-hidden">
+                <Image
+                  source={{ uri: getScanResultImageUriFromResultId(item.id) }}
+                  className="absolute top-0 left-0 w-full h-full"
+                  resizeMode="cover"
+                  alt="recent-scan"
+                ></Image>
 
-              {/* Gradient Overlay */}
-              <Box className="absolute w-full h-1/2 bg-gradient-to-t z-10 from-background-0 to-transparent" />
+                {/* Gradient Overlay */}
+                <Box className="absolute w-full h-1/2 bg-gradient-to-t z-10 from-background-0 to-transparent" />
 
-              <VStack className="z-10 absolute bottom-4 left-4  ">
-                <Text className="font-bold text-2xl">
-                  {item.classification}
-                </Text>
-                <Text className="">{item.confidence}% Confidence</Text>
-              </VStack>
+                <VStack className="z-10 absolute bottom-4 left-4  ">
+                  <Text className="font-bold text-2xl">
+                    {item.classification}
+                  </Text>
+                  <Text className="">{item.confidence}% Confidence</Text>
+                </VStack>
+              </Box>
+            )}
+          />
+        ) : (
+          <Box className="relative flex flex-auto bg-background-50 justify-center h-full overflow-hidden p-4 gap-4">
+            <Box className="flex flex-1 gap-4 max-h-1/4">
+              <Skeleton className="w-1/3 h-4 p-4" variant="rounded" />
+              <Skeleton className="w-1/5 h-2 p-4" variant="rounded" />
             </Box>
-          )}
-        />
+
+            <Box className="flex-auto justify-center rounded-lg">
+              <Center className="opacity-50 mb-1">
+                <HStack className="gap-2">
+                  <Scan color="white" />
+                  <GalleryHorizontal color="white" />
+                  <ImageLucide color="white" />
+                </HStack>
+              </Center>
+
+              <Text className="text-center opacity-50">
+                Scan results will display here
+              </Text>
+              <Text className="text-center opacity-50 text-sm">
+                Powered by XR Vision
+              </Text>
+            </Box>
+
+            <Box className="flex flex-1 gap-4 max-h-1/4  justify-end">
+              <Skeleton className="w-3/4 h-4 p-4" variant="rounded" />
+              <Skeleton className="w-1/2 h-4 p-4" variant="rounded" />
+            </Box>
+          </Box>
+        )}
       </Box>
 
       {/*<Pagination.
@@ -161,12 +219,12 @@ export default function HomeScreen() {
         onPress={onPressPagination}
       />*/}
 
-      <Box className="w-full flex align-middle bg-background-50 p-4 rounded-lg">
+      {/* <Box className="w-full flex align-middle bg-background-50 p-4 rounded-lg">
         <Text className="text-sm text-center">Developed by XtraRice Team</Text>
         <Text className="text-xs text-center">
           danodoms - henrytors - rexpons
         </Text>
-      </Box>
+      </Box>*/}
     </VStack>
   );
 }

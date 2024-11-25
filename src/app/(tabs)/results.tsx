@@ -47,8 +47,8 @@ export default function ResultsScreen() {
   };
 
   return (
-    <VStack className="p-4 gap-4 pt-12">
-      {/*<Text>Total Results: {results.length}</Text>
+    <VStack className="p-4 gap-4 pt-12 bg-background-0">
+      {/*   <Text>Total Results: {results.length}</Text>
       <HStack className="gap-4 items-center w-full">
         <Button onPress={listFiles} className="flex flex-auto">
           <ButtonText>List Files</ButtonText>
