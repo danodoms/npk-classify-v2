@@ -16,7 +16,7 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-        headerShown: true,
+        headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
@@ -31,6 +31,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
+          tabBarShowLabel: false,
           title: "Home",
           tabBarIcon: ({ color }) => <House color={color} />,
         }}
@@ -38,6 +39,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="scan"
         options={{
+          tabBarShowLabel: false,
           title: "Scan",
           tabBarIcon: ({ color }) => <Scan color={color} />,
         }}
@@ -45,6 +47,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="results"
         options={{
+          tabBarShowLabel: false,
           title: "Results",
           tabBarIcon: ({ color }) => <History color={color} />,
         }}

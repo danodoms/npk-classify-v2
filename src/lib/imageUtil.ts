@@ -3,6 +3,7 @@ import {
   documentDirectory,
   makeDirectoryAsync,
 } from "expo-file-system";
+import * as FileSystem from "expo-file-system";
 
 export const saveImageToAppData = async (
   imageUri: string,
@@ -21,4 +22,8 @@ export const saveImageToAppData = async (
   } catch (error) {
     console.error("Error moving image:", error);
   }
+};
+
+export const getScanResultImageUriFromResultId = (resultId: string) => {
+  return FileSystem.documentDirectory + "images/" + resultId;
 };

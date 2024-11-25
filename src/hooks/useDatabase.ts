@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { useSystem } from "@/src/powersync/System";
 import { RESULTS_TABLE } from "@/src/powersync/Schema";
+import { useQuery } from "@powersync/react";
 
 export function useDatabase() {
   const { db } = useSystem();
   const [error, setError] = useState(null);
   // const { userID } = await supabaseConnector.fetchCredentials();
+
+  const { data: results } = useQuery(db.selectFrom(RESULTS_TABLE).selectAll());
 
   const addResult = async (
     resultId: string,
@@ -30,5 +33,5 @@ export function useDatabase() {
     }
   };
 
-  return { addResult };
+  return { addResult, results };
 }

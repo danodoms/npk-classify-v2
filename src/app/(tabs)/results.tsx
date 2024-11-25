@@ -17,13 +17,15 @@ import { Text } from "@/src/components/ui/text";
 import { ScrollView } from "react-native";
 import { HStack } from "@/src/components/ui/hstack";
 import { useQuery } from "@powersync/react";
+import { getScanResultImageUriFromResultId } from "@/src/lib/imageUtil";
+import { useDatabase } from "@/src/hooks/useDatabase";
 
 export default function ResultsScreen() {
   const [result, setResult] = useState("");
   const { supabaseConnector, db } = useSystem();
   /*const [results, setResults] = useState<Result[]>([]);*/
 
-  const { data: results } = useQuery(db.selectFrom(RESULTS_TABLE).selectAll());
+  const { results } = useDatabase();
 
   // Reset the database
   const resetResults = async () => {
@@ -45,7 +47,7 @@ export default function ResultsScreen() {
   };
 
   return (
-    <VStack className="p-4 gap-4">
+    <VStack className="p-4 gap-4 pt-12">
       {/*<Text>Total Results: {results.length}</Text>
       <HStack className="gap-4 items-center w-full">
         <Button onPress={listFiles} className="flex flex-auto">
@@ -64,7 +66,7 @@ export default function ResultsScreen() {
               <Image
                 className="rounded-md border-white-50 border-2"
                 source={{
-                  uri: FileSystem.documentDirectory + "images/" + result.id,
+                  uri: getScanResultImageUriFromResultId(result.id),
                 }}
                 alt="image-result"
               ></Image>
