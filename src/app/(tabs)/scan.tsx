@@ -8,6 +8,7 @@ import {
   Camera,
   useCameraDevice,
   useCameraPermission,
+  type CameraPosition
 } from "react-native-vision-camera";
 import { Image, View } from "react-native";
 import { VStack } from "@/src/components/ui/vstack";
@@ -29,6 +30,9 @@ import LottieView from "lottie-react-native";
 import { saveImageToAppData } from "@/src/lib/imageUtil";
 import { useDatabase } from "@/src/hooks/useDatabase";
 import * as Crypto from "expo-crypto";
+import { Circle } from "lucide-react-native";
+import { width } from "dom-helpers";
+import { HStack } from "@/src/components/ui/hstack";
 
 export default function ScanScreen() {
   const { addResult } = useDatabase();
@@ -49,7 +53,8 @@ export default function ScanScreen() {
   const cameraRef = useRef<Camera | null>(null);
   const [capturedImageUri, setCapturedImageUri] = useState<string | null>(null); // To hold the image URI
   const { hasPermission, requestPermission } = useCameraPermission();
-  const device = useCameraDevice("back");
+  const [cameraFacing, setCameraFacing] = useState<CameraPosition>("back")
+  const device = useCameraDevice(cameraFacing);
 
   // Ensure TensorFlow is ready before classifying
   useEffect(() => {
@@ -63,7 +68,7 @@ export default function ScanScreen() {
 
   const loadModel = async () => {
     const tfliteModel = await loadTensorflowModel(
-      require("../../../assets/model/tflite/plant-disease/plant-disease.tflite")
+      require("@/assets/model/tflite/plant-disease/plant-disease.tflite")
     );
     setModel(tfliteModel);
   };
@@ -87,9 +92,9 @@ export default function ScanScreen() {
     );
   }
 
-  /*function toggleCameraFacing() {
-        setFacing(current => (current === 'back' ? 'front' : 'back'));
-    }*/
+  function toggleCameraFacing() {
+    setCameraFacing(current => (current === 'back' ? 'front' : 'back'));
+  }
 
   const captureAndClassify = async () => {
     if (!model) {
@@ -158,15 +163,38 @@ export default function ScanScreen() {
       );
 
     return (
-      <Button
-        onPress={captureAndClassify}
-        size="lg"
-        variant="solid"
-        action="primary"
-        className="rounded-lg "
-      >
-        <ButtonText>Classify</ButtonText>
-      </Button>
+
+      <HStack className="gap-4 mb-4 flex justify-center items-center ">
+        {/* {device?.hasFlash && */}
+        <Button className="rounded-full">
+          <ButtonText>
+            Toggle Flash
+          </ButtonText>
+        </Button>
+        {/* } */}
+
+        <Button
+          onPress={captureAndClassify}
+          size="xl"
+          variant="solid"
+          action="primary"
+          className="rounded-full"
+        >
+          <ButtonText>Classify</ButtonText>
+          {/*<ButtonIcon></ButtonIcon>*/}
+        </Button>
+
+
+
+        <Button onPress={toggleCameraFacing} className="rounded-full">
+          <ButtonText>
+            Flip Camera
+          </ButtonText>
+        </Button>
+      </HStack>
+
+
+      /*<Circle color="white" style={} onPress={captureAndClassify} />*/
     );
   }
 
@@ -187,17 +215,17 @@ export default function ScanScreen() {
         isActive={true}
         ref={cameraRef}
         photo={true}
-        /*  frameProcessor={frameProcessor}*/
+      /*  frameProcessor={frameProcessor}*/
       />
 
-      {/* Image Preview */}
-      {capturedImageUri && (
-        <VStack>
-          <Image source={{ uri: capturedImageUri }} />
-        </VStack>
-      )}
+
+
+
 
       <RenderButtonComponent />
+
+
+
 
       <ScanResultDrawer
         drawerState={{

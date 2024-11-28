@@ -30,7 +30,7 @@ export function useTfliteModel() {
       })
       .then((prediction) => {
         setIsModelPredicting(false);
-        console.log("MODEL OUTPUT PREDICTION: ", prediction);
+        /*  console.log("MODEL OUTPUT PREDICTION: ", prediction);*/
         return performClassification(prediction[0], outputClasses);
       })
       .then(() => {

@@ -31,78 +31,70 @@ interface ScanResultDrawerProps {
 
 const ScanResultDrawer: React.FC<ScanResultDrawerProps> = ({ drawerState }) => {
   return (
-    <>
-      <Drawer
-        isOpen={drawerState.isDrawerOpen}
-        /*isOpen={true}*/
-        onClose={() => {
-          drawerState.setIsDrawerOpen(false);
-        }}
-        size="md"
-        anchor="bottom"
-      >
-        <DrawerBackdrop />
-        <DrawerContent>
-          <DrawerHeader>
-            {drawerState.classification ? (
-              <Heading size="2xl" className="text-center">
+    <Drawer
+      isOpen={drawerState.isDrawerOpen}
+      /*isOpen={true}*/
+      onClose={() => {
+        drawerState.setIsDrawerOpen(false);
+      }}
+      size="md"
+      anchor="bottom"
+    >
+      <DrawerBackdrop />
+      <DrawerContent>
+        <DrawerHeader>
+          {drawerState.classification && drawerState.confidence ? (
+            <VStack className="">
+              <Heading size="xl" className="text-center">
                 {drawerState.classification}
               </Heading>
-            ) : (
-              /*<VStack space="md" className="h-20">
-                <Skeleton variant="rounded" className="h-4 w-full" />
 
-                <Skeleton variant="rounded" className="h-4 w-1/2" />
-              </VStack>*/
-
-              <SkeletonText _lines={2} className="h-4 rounded-md" />
-            )}
-          </DrawerHeader>
-          <DrawerBody>
-            {drawerState.confidence ? (
-              <Text size="xl" className="text-typography-400 mb-4">
+              <Text className="text-typography-400">
                 Confidence: {drawerState.confidence}%
               </Text>
-            ) : (
-              <Skeleton variant="rounded" className="h-4 w-1/2 mb-4" />
-            )}
+            </VStack>
+          ) : (
+            /*<VStack className="flex overflow-visible">*/
+            <SkeletonText _lines={2} speed={4} className="h-6 rounded-md" />
+            /*<Skeleton variant="rounded" className="h-4 w-1/2" />*/
+            /*</VStack>*/
+          )}
+        </DrawerHeader>
+        <DrawerBody>
+          {drawerState.imageUri ? (
+            <Box>
+              <Image
+                size="2xl"
+                className="min-h-full min-w-full rounded-md"
+                alt="classification-image"
+                source={{
+                  uri: drawerState.imageUri,
+                }}
+              ></Image>
 
-            {drawerState.imageUri ? (
-              <Box>
-                <Image
-                  size="2xl"
-                  className="min-h-full min-w-full rounded-md"
-                  alt="classification-image"
-                  source={{
-                    uri: drawerState.imageUri,
-                  }}
-                ></Image>
-
-                <LottieView
-                  style={styles.animation}
-                  source={require("@/assets/animations/scan-animation.json")}
-                  autoPlay
-                  loop
-                />
-              </Box>
-            ) : (
-              <Skeleton variant="rounded" className="h-full w-full" />
-            )}
-          </DrawerBody>
-          <DrawerFooter>
-            <Button
-              onPress={() => {
-                /*drawerState.setIsDrawerOpen(false);*/
-                drawerState.saveResultCallback();
-              }}
-              className="flex-1"
-            >
-              <ButtonText>Save Result</ButtonText>
-            </Button>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
-    </>
+              <LottieView
+                style={styles.animation}
+                source={require("@/assets/animations/scan-animation.json")}
+                autoPlay
+                loop
+              />
+            </Box>
+          ) : (
+            <Skeleton variant="rounded" className="h-full w-full" />
+          )}
+        </DrawerBody>
+        <DrawerFooter>
+          <Button
+            onPress={() => {
+              drawerState.saveResultCallback();
+            }}
+            className="flex-1"
+          >
+            <ButtonText>Save and close</ButtonText>
+          </Button>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   );
 };
 
