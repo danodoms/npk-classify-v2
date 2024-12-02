@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSystem } from "@/src/powersync/System";
+import { useSystem } from "@/src/powersync/PowerSync";
 import * as Crypto from "expo-crypto";
 import * as FileSystem from "expo-file-system";
 

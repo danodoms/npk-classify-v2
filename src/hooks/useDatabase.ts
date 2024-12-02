@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSystem } from "@/src/powersync/System";
+import { useSystem } from "@/src/powersync/PowerSync";
 import { RESULTS_TABLE } from "@/src/powersync/Schema";
 import { useQuery } from "@powersync/react";
 

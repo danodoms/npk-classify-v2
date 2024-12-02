@@ -119,7 +119,7 @@ export default function HomeScreen() {
                 {item.classification}
               </Text>
               <Text className="ml-auto font-bold  rounded-lg">
-                {item.total}
+                {item.total.toString()}
               </Text>
             </HStack>
           )}

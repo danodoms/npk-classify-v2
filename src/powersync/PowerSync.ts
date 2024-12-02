@@ -3,25 +3,27 @@ import "@azure/core-asynciterator-polyfill";
 import { createContext, useContext } from "react";
 import {
   AbstractPowerSyncDatabase,
-  RNQSPowerSyncDatabaseOpenFactory,
+  PowerSyncDatabase,
 } from "@powersync/react-native";
 import { AppSchema, Database } from "./Schema";
 import { SupabaseConnector } from "./SupabaseConnector";
 import { Kysely, wrapPowerSyncWithKysely } from "@powersync/kysely-driver";
 
-export class System {
+export class PowerSync {
   supabaseConnector: SupabaseConnector;
   powersync: AbstractPowerSyncDatabase;
   db: Kysely<Database>;
 
   constructor() {
-    const factory = new RNQSPowerSyncDatabaseOpenFactory({
+    const database = new PowerSyncDatabase({
       schema: AppSchema,
-      dbFilename: "app.sqlite",
+      database: {
+        dbFilename: "app.sqlite",
+      },
     });
 
     this.supabaseConnector = new SupabaseConnector();
-    this.powersync = factory.getInstance();
+    this.powersync = database;
     this.db = wrapPowerSyncWithKysely(this.powersync);
   }
 
@@ -32,6 +34,6 @@ export class System {
   }
 }
 
-export const system = new System();
+export const system = new PowerSync();
 export const SystemContext = createContext(system);
 export const useSystem = () => useContext(SystemContext);
