@@ -8,9 +8,9 @@ const results = new Table(
     // id column (text) is automatically included
     created_at: column.text,
     classification: column.text,
-    confidence: column.real,
     timestamp: column.text,
     user_uuid: column.text,
+    confidence: column.real,
   },
   { indexes: {} }
 );
