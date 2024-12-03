@@ -22,10 +22,10 @@ const generateId = () => uuidv4();
 const customSynced = configureSynced(syncedSupabase, {
   // Use React Native MMKV
   persist: {
-    /*plugin: observablePersistMMKV({ MMKV, }),*/
-    plugin: observablePersistAsyncStorage({
+    plugin: observablePersistMMKV({ id: "mmkvStorage" }),
+    /*plugin: observablePersistAsyncStorage({
       AsyncStorage,
-    }),
+    }),*/
   },
   generateId,
   supabase,

@@ -21,71 +21,63 @@ import { getScanResultImageUriFromResultId } from "@/src/lib/imageUtil";
 import { useDatabase } from "@/src/hooks/useDatabase";
 import { observer } from "@legendapp/state/react";
 import { results$ as _results$ } from "@/src/utils/SupaLegend";
+import { observable, observe } from "@legendapp/state";
+import { enableReactTracking } from "@legendapp/state/config/enableReactTracking";
+import { useResults } from "@/src/utils/useResults";
 
-const ResultsScreen = observer(
-  ({ results$ }: { results$: typeof _results$ }) => {
-    const results = _results$.get();
-    console.log(results);
+export default function ResultsScreen() {
+  const results = useResults();
 
-    // Reset the database
-    /*const resetResults = async () => {
-    await db.deleteFrom(RESULTS_TABLE).execute();
-  };*/
-    /*if (!results) return <></>;*/
+  const listFiles = async () => {
+    try {
+      if (!FileSystem.documentDirectory) return;
 
-    const listFiles = async () => {
-      try {
-        if (!FileSystem.documentDirectory) return;
+      // Get the list of files in the document directory
+      const files = await FileSystem.readDirectoryAsync(
+        FileSystem.documentDirectory + "images"
+      );
+      console.log("Files in documentDirectory:", files);
+    } catch (error) {
+      console.error("Error reading files:", error);
+    }
+  };
 
-        // Get the list of files in the document directory
-        const files = await FileSystem.readDirectoryAsync(
-          FileSystem.documentDirectory + "images"
-        );
-        console.log("Files in documentDirectory:", files);
-      } catch (error) {
-        console.error("Error reading files:", error);
-      }
-    };
-
-    return (
-      <VStack className="p-4 gap-4 pt-12 bg-background-0">
-        {/*<Text>Total Results: {results.length()}</Text>
+  return (
+    <VStack className="p-4 gap-4 pt-12 bg-background-0">
+      <Text>Total Results: {Object.keys(results).length}</Text>
       <HStack className="gap-4 items-center w-full">
         <Button onPress={listFiles} className="flex flex-auto">
-          <ButtonText>List Files</ButtonText>
+          <ButtonText>Log Captured Images</ButtonText>
         </Button>
 
-        <Button onPress={resetResults} className="flex flex-auto">
-          <ButtonText>Reset Database</ButtonText>
-        </Button>
-      </HStack>*/}
+        {/*<Button onPress={resetResults} className="flex flex-auto">
+            <ButtonText>Reset Database</ButtonText>
+          </Button>*/}
+      </HStack>
 
-        <VStack>
-          <ScrollView>
-            {Object.values(results).map((result) => (
-              <HStack key={result.id} className="pt-4 gap-4">
-                <Image
-                  className="rounded-md border-white-50 border-2"
-                  source={{
-                    uri: getScanResultImageUriFromResultId(result.id),
-                  }}
-                  alt="image-result"
-                ></Image>
+      <VStack>
+        <ScrollView>
+          {Object.values(results).map((result) => (
+            <HStack key={result.id} className="pt-4 gap-4">
+              <Image
+                className="rounded-md border-white-50 border-2"
+                source={{
+                  uri: getScanResultImageUriFromResultId(result.id),
+                }}
+                alt="image-result"
+              ></Image>
 
-                <VStack>
-                  <Text className="font-bold text-lg">
-                    {result.classification}
-                  </Text>
-                  <Text className="">{result.confidence}%</Text>
-                  {/*<Text>{result.timestamp}</Text>*/}
-                </VStack>
-              </HStack>
-            ))}
-          </ScrollView>
-        </VStack>
+              <VStack>
+                <Text className="font-bold text-lg">
+                  {result.classification}
+                </Text>
+                <Text className="">{result.confidence}%</Text>
+                <Text>{result.created_at}</Text>
+              </VStack>
+            </HStack>
+          ))}
+        </ScrollView>
       </VStack>
-    );
-  }
-);
-
-export default ResultsScreen;
+    </VStack>
+  );
+}
