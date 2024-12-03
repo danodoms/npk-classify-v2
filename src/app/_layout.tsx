@@ -13,8 +13,6 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/src/hooks/useColorScheme";
-import { PowerSyncProvider } from "@/src/powersync/PowerSyncProvider";
-import { useSystem } from "@/src/powersync/PowerSync";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -24,11 +22,6 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../../assets/fonts/SpaceMono-Regular.ttf"),
   });
-
-  const system = useSystem();
-  useEffect(() => {
-    system.init();
-  }, []);
 
   useEffect(() => {
     if (loaded) {
@@ -43,13 +36,11 @@ export default function RootLayout() {
   return (
     <GluestackUIProvider mode={(colorScheme ?? "light") as "light" | "dark"}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <PowerSyncProvider>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-          <StatusBar style="auto" />
-        </PowerSyncProvider>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        <StatusBar style="auto" />
       </ThemeProvider>
     </GluestackUIProvider>
   );

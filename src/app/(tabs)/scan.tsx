@@ -8,7 +8,7 @@ import {
   Camera,
   useCameraDevice,
   useCameraPermission,
-  type CameraPosition
+  type CameraPosition,
 } from "react-native-vision-camera";
 import { Image, View } from "react-native";
 import { VStack } from "@/src/components/ui/vstack";
@@ -28,14 +28,13 @@ import ScanResultDrawer from "@/src/components/ScanResultDrawer";
 import { useTfliteModel } from "@/src/hooks/useTfliteModel";
 import LottieView from "lottie-react-native";
 import { saveImageToAppData } from "@/src/lib/imageUtil";
-import { useDatabase } from "@/src/hooks/useDatabase";
 import * as Crypto from "expo-crypto";
 import { Circle } from "lucide-react-native";
 import { width } from "dom-helpers";
 import { HStack } from "@/src/components/ui/hstack";
+import { addResult } from "@/src/utils/SupaLegend";
 
 export default function ScanScreen() {
-  const { addResult } = useDatabase();
   const {
     isDrawerOpen,
     setIsDrawerOpen,
@@ -53,7 +52,7 @@ export default function ScanScreen() {
   const cameraRef = useRef<Camera | null>(null);
   const [capturedImageUri, setCapturedImageUri] = useState<string | null>(null); // To hold the image URI
   const { hasPermission, requestPermission } = useCameraPermission();
-  const [cameraFacing, setCameraFacing] = useState<CameraPosition>("back")
+  const [cameraFacing, setCameraFacing] = useState<CameraPosition>("back");
   const device = useCameraDevice(cameraFacing);
 
   // Ensure TensorFlow is ready before classifying
@@ -93,7 +92,7 @@ export default function ScanScreen() {
   }
 
   function toggleCameraFacing() {
-    setCameraFacing(current => (current === 'back' ? 'front' : 'back'));
+    setCameraFacing((current) => (current === "back" ? "front" : "back"));
   }
 
   const captureAndClassify = async () => {
@@ -141,10 +140,12 @@ export default function ScanScreen() {
     if (!classification) return console.log("No captured classification");
     if (!confidence) return console.log("No confidence");
 
-    const resultId = Crypto.randomUUID();
+    //@DEPRECATED
+    /*const resultId = Crypto.randomUUID();*/
+    /*saveImageToAppData(capturedImageUri, resultId);
+    addResult(resultId, classification, confidence);*/
 
-    saveImageToAppData(capturedImageUri, resultId);
-    addResult(resultId, classification, confidence);
+    addResult(capturedImageUri, classification, confidence);
   }
 
   function RenderButtonComponent() {
@@ -163,13 +164,10 @@ export default function ScanScreen() {
       );
 
     return (
-
       <HStack className="gap-4 mb-4 flex justify-center items-center ">
         {/* {device?.hasFlash && */}
         <Button className="rounded-full">
-          <ButtonText>
-            Toggle Flash
-          </ButtonText>
+          <ButtonText>Toggle Flash</ButtonText>
         </Button>
         {/* } */}
 
@@ -184,15 +182,10 @@ export default function ScanScreen() {
           {/*<ButtonIcon></ButtonIcon>*/}
         </Button>
 
-
-
         <Button onPress={toggleCameraFacing} className="rounded-full">
-          <ButtonText>
-            Flip Camera
-          </ButtonText>
+          <ButtonText>Flip Camera</ButtonText>
         </Button>
       </HStack>
-
 
       /*<Circle color="white" style={} onPress={captureAndClassify} />*/
     );
@@ -215,17 +208,10 @@ export default function ScanScreen() {
         isActive={true}
         ref={cameraRef}
         photo={true}
-      /*  frameProcessor={frameProcessor}*/
+        /*  frameProcessor={frameProcessor}*/
       />
 
-
-
-
-
       <RenderButtonComponent />
-
-
-
 
       <ScanResultDrawer
         drawerState={{

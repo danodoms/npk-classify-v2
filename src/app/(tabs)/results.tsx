@@ -19,36 +19,37 @@ import { HStack } from "@/src/components/ui/hstack";
 import { useQuery } from "@powersync/react";
 import { getScanResultImageUriFromResultId } from "@/src/lib/imageUtil";
 import { useDatabase } from "@/src/hooks/useDatabase";
+import { observer } from "@legendapp/state/react";
+import { results$ as _results$ } from "@/src/utils/SupaLegend";
 
-export default function ResultsScreen() {
-  const [result, setResult] = useState("");
-  const { supabaseConnector, db } = useSystem();
-  /*const [results, setResults] = useState<Result[]>([]);*/
+const ResultsScreen = observer(
+  ({ results$ }: { results$: typeof _results$ }) => {
+    const results = _results$.get();
+    console.log(results);
 
-  const { results } = useDatabase();
-
-  // Reset the database
-  const resetResults = async () => {
+    // Reset the database
+    /*const resetResults = async () => {
     await db.deleteFrom(RESULTS_TABLE).execute();
-  };
+  };*/
+    /*if (!results) return <></>;*/
 
-  const listFiles = async () => {
-    try {
-      if (!FileSystem.documentDirectory) return;
+    const listFiles = async () => {
+      try {
+        if (!FileSystem.documentDirectory) return;
 
-      // Get the list of files in the document directory
-      const files = await FileSystem.readDirectoryAsync(
-        FileSystem.documentDirectory + "images"
-      );
-      console.log("Files in documentDirectory:", files);
-    } catch (error) {
-      console.error("Error reading files:", error);
-    }
-  };
+        // Get the list of files in the document directory
+        const files = await FileSystem.readDirectoryAsync(
+          FileSystem.documentDirectory + "images"
+        );
+        console.log("Files in documentDirectory:", files);
+      } catch (error) {
+        console.error("Error reading files:", error);
+      }
+    };
 
-  return (
-    <VStack className="p-4 gap-4 pt-12 bg-background-0">
-      {/*   <Text>Total Results: {results.length}</Text>
+    return (
+      <VStack className="p-4 gap-4 pt-12 bg-background-0">
+        {/*<Text>Total Results: {results.length()}</Text>
       <HStack className="gap-4 items-center w-full">
         <Button onPress={listFiles} className="flex flex-auto">
           <ButtonText>List Files</ButtonText>
@@ -59,29 +60,32 @@ export default function ResultsScreen() {
         </Button>
       </HStack>*/}
 
-      <VStack>
-        <ScrollView>
-          {results.map((result) => (
-            <HStack key={result.id} className="pt-4 gap-4">
-              <Image
-                className="rounded-md border-white-50 border-2"
-                source={{
-                  uri: getScanResultImageUriFromResultId(result.id),
-                }}
-                alt="image-result"
-              ></Image>
+        <VStack>
+          <ScrollView>
+            {Object.values(results).map((result) => (
+              <HStack key={result.id} className="pt-4 gap-4">
+                <Image
+                  className="rounded-md border-white-50 border-2"
+                  source={{
+                    uri: getScanResultImageUriFromResultId(result.id),
+                  }}
+                  alt="image-result"
+                ></Image>
 
-              <VStack>
-                <Text className="font-bold text-lg">
-                  {result.classification}
-                </Text>
-                <Text className="">{result.confidence}%</Text>
-                <Text>{result.timestamp}</Text>
-              </VStack>
-            </HStack>
-          ))}
-        </ScrollView>
+                <VStack>
+                  <Text className="font-bold text-lg">
+                    {result.classification}
+                  </Text>
+                  <Text className="">{result.confidence}%</Text>
+                  {/*<Text>{result.timestamp}</Text>*/}
+                </VStack>
+              </HStack>
+            ))}
+          </ScrollView>
+        </VStack>
       </VStack>
-    </VStack>
-  );
-}
+    );
+  }
+);
+
+export default ResultsScreen;
