@@ -3,6 +3,9 @@ import { useSystem } from "@/src/powersync/PowerSync";
 import { RESULTS_TABLE } from "@/src/powersync/Schema";
 import { useQuery } from "@powersync/react";
 
+/**
+ * @deprecated This method uses the powersync approach
+ */
 export function useDatabase() {
   const { db } = useSystem();
   const [error, setError] = useState(null);

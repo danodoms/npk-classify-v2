@@ -42,11 +42,12 @@ import { Button, ButtonText } from "@/src/components/ui/button";
 import { FlashList } from "@shopify/flash-list";
 import { Center } from "@/src/components/ui/center";
 import { Skeleton } from "@/src/components/ui/skeleton";
+import { useResults } from "@/src/utils/useResults";
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const { width, height } = Dimensions.get("window");
-  const { results, topClassifications } = useDatabase();
+  const { results, topClassifications } = useResults();
 
   /*const progress = useSharedValue<number>(0);*/
 
@@ -119,7 +120,7 @@ export default function HomeScreen() {
                 {item.classification}
               </Text>
               <Text className="ml-auto font-bold  rounded-lg">
-                {item.total.toString()}
+                {item.count.toString()}
               </Text>
             </HStack>
           )}

@@ -5,7 +5,6 @@ import { configureSynced } from "@legendapp/state/sync";
 import { observablePersistAsyncStorage } from "@legendapp/state/persist-plugins/async-storage";
 import { observablePersistMMKV } from "@legendapp/state/persist-plugins/mmkv";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { MMKV } from "react-native-mmkv";
 import { Database } from "./database.types";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";

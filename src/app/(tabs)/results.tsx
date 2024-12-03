@@ -26,7 +26,8 @@ import { enableReactTracking } from "@legendapp/state/config/enableReactTracking
 import { useResults } from "@/src/utils/useResults";
 
 export default function ResultsScreen() {
-  const results = useResults();
+  const { results } = useResults();
+  /*console.log(topClassifications);*/
 
   const listFiles = async () => {
     try {
@@ -57,7 +58,7 @@ export default function ResultsScreen() {
 
       <VStack>
         <ScrollView>
-          {Object.values(results).map((result) => (
+          {results.map((result) => (
             <HStack key={result.id} className="pt-4 gap-4">
               <Image
                 className="rounded-md border-white-50 border-2"
