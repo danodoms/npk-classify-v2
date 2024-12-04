@@ -28,7 +28,7 @@ export const useResults = () => {
   });
 
   //Get the results and converts it into an array
-  const results = Object.values(observable(_results$).get());
+  const results = Object.values(observable(_results$).get() || {});
   const topClassifications = aggregateAndSortClassifications(results);
 
   return { results, topClassifications };

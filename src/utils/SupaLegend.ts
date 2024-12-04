@@ -9,11 +9,14 @@ import { Database } from "./database.types";
 import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import { saveImageToAppData } from "@/src/lib/imageUtil";
+import { MMKV } from "react-native-mmkv";
 
 const supabase = createClient<Database>(
   process.env.EXPO_PUBLIC_SUPABASE_URL as string,
   process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY as string
 );
+
+const mmkvStorageId = "mmkvStorage";
 
 const generateId = () => uuidv4();
 
@@ -21,7 +24,7 @@ const generateId = () => uuidv4();
 const customSynced = configureSynced(syncedSupabase, {
   // Use React Native MMKV
   persist: {
-    plugin: observablePersistMMKV({ id: "mmkvStorage" }),
+    plugin: observablePersistMMKV({ id: mmkvStorageId }),
     /*plugin: observablePersistAsyncStorage({
       AsyncStorage,
     }),*/
@@ -55,6 +58,8 @@ export const results$ = observable(
     },
   })
 );
+
+export const clearResults$ = () => results$.delete();
 
 /*CRUD FUNCTIONS BELOW*/
 /*CRUD FUNCTIONS BELOW*/
