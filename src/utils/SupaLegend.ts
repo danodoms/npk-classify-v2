@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, Session } from "@supabase/supabase-js";
 import { observable } from "@legendapp/state";
 import { syncedSupabase } from "@legendapp/state/sync-plugins/supabase";
 import { configureSynced } from "@legendapp/state/sync";
@@ -15,6 +15,8 @@ import { supabase } from "./supabase";
 const mmkvStorageId = "mmkvStorage";
 
 const generateId = () => uuidv4();
+
+const uid = "";
 
 // Create a configured sync function
 const customSynced = configureSynced(syncedSupabase, {
@@ -42,6 +44,7 @@ export const results$ = observable(
       from.select(
         "id,counter,classification,confidence,created_at,updated_at,deleted"
       ),
+    filter: (select) => select.eq("user_id", uid),
     actions: ["read", "create", "update", "delete"],
     realtime: true,
     // Persist data and pending changes locally
@@ -54,6 +57,8 @@ export const results$ = observable(
     },
   })
 );
+
+const results = results$.get();
 
 export const clearResults$ = () => results$.delete();
 
