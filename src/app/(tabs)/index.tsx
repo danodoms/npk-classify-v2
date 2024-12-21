@@ -1,4 +1,4 @@
-import { Dimensions } from "react-native";
+import { Dimensions, Pressable } from "react-native";
 
 import { Text } from "@/src/components/ui/text";
 
@@ -43,6 +43,7 @@ import { FlashList } from "@shopify/flash-list";
 import { Center } from "@/src/components/ui/center";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { useResults } from "@/src/utils/useResults";
+import { Link } from "expo-router";
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
@@ -61,15 +62,20 @@ export default function HomeScreen() {
           <Sparkle color="white" className="size-xs" />
         </HStack>
 
-        <Avatar size="md" className="flex">
-          <AvatarFallbackText>John Doe</AvatarFallbackText>
-          <AvatarImage
-            source={{
-              uri: "https://avatars.githubusercontent.com/u/165539900?v=4",
-            }}
-          />
-          <AvatarBadge />
-        </Avatar>
+        <Link href="/account">
+          <Avatar size="md" className="flex">
+            <AvatarFallbackText>John Doe</AvatarFallbackText>
+            <AvatarImage
+              source={{
+                uri: "https://avatars.githubusercontent.com/u/165539900?v=4",
+              }}
+            />
+            <AvatarBadge />
+          </Avatar>
+        </Link>
+
+
+
 
         {/*<Text className="text-left">
           Classify Rice NPK deficiencies with your camera

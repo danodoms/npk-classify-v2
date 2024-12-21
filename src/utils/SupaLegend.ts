@@ -10,11 +10,7 @@ import "react-native-get-random-values";
 import { v4 as uuidv4 } from "uuid";
 import { saveImageToAppData } from "@/src/lib/imageUtil";
 import { MMKV } from "react-native-mmkv";
-
-const supabase = createClient<Database>(
-  process.env.EXPO_PUBLIC_SUPABASE_URL as string,
-  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY as string
-);
+import { supabase } from "./supabase";
 
 const mmkvStorageId = "mmkvStorage";
 

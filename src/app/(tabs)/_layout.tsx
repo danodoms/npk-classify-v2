@@ -7,7 +7,7 @@ import { IconSymbol } from "@/src/components/ui/IconSymbol";
 import TabBarBackground from "@/src/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/src/hooks/useColorScheme";
-import { House, Scan, History } from "lucide-react-native";
+import { House, Scan, History, UserRound } from "lucide-react-native";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -50,6 +50,15 @@ export default function TabLayout() {
           tabBarShowLabel: false,
           title: "Results",
           tabBarIcon: ({ color }) => <History color={color} />,
+        }}
+      />
+
+      <Tabs.Screen
+        name="account"
+        options={{
+          tabBarShowLabel: false,
+          title: "Account",
+          tabBarIcon: ({ color }) => <UserRound color={color} />,
         }}
       />
     </Tabs>
