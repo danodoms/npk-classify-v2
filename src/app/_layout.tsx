@@ -39,6 +39,13 @@ export default function RootLayout() {
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
+          <Stack.Screen
+            name="screens/account"
+            options={{
+              title: "Account",
+              headerShown: true // Optional: Show or hide the header
+            }}
+          />
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>

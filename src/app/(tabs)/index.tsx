@@ -62,7 +62,7 @@ export default function HomeScreen() {
           <Sparkle color="white" className="size-xs" />
         </HStack>
 
-        <Link href="/account">
+        <Link href="/screens/account">
           <Avatar size="md" className="flex">
             <AvatarFallbackText>John Doe</AvatarFallbackText>
             <AvatarImage

@@ -53,14 +53,14 @@ export default function TabLayout() {
         }}
       />
 
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="account"
         options={{
           tabBarShowLabel: false,
           title: "Account",
           tabBarIcon: ({ color }) => <UserRound color={color} />,
         }}
-      />
+      /> */}
     </Tabs>
   );
 }

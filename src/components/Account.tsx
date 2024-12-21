@@ -8,7 +8,10 @@ import { Center } from '@/src/components/ui/center'
 import { HStack } from '@/src/components/ui/hstack'
 import { Button, ButtonText } from '@/src/components/ui/button'
 import { Input, InputField, InputIcon, InputSlot } from '@/src/components/ui/input'
-import { Eye, Lock, Mail } from 'lucide-react-native'
+import { Bell, Eye, Lock, Mail, RefreshCw, UserRound } from 'lucide-react-native'
+import { Avatar, AvatarBadge, AvatarFallbackText, AvatarImage } from './ui/avatar'
+import { Divider } from './ui/divider'
+import { Switch } from './ui/switch'
 
 export default function Account({ session }: { session: Session }) {
     const [loading, setLoading] = useState(true)
@@ -109,56 +112,75 @@ export default function Account({ session }: { session: Session }) {
         //     </View>
         // </View>
 
-        <VStack className='align-items-center justify-center h-full gap-4 p-4'>
-            <Center>
-                <Text className='font-bold text-5xl'>{username || "no username"}</Text>
-            </Center>
+        <VStack className='align-items-center justify-start h-full gap-4 p-4 bg-background-0'>
+            <HStack className='gap-4 border-0 border-background-100 border-opacity-50 rounded-md'>
+                <Avatar size="md">
+                    <AvatarFallbackText>
+                        {session?.user?.email}
+                    </AvatarFallbackText>
+                    {/* <AvatarImage
+                        source={{
+                            uri: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80",
+                        }}
+                    /> */}
+                    {/* <AvatarBadge /> */}
+                </Avatar>
 
-            <VStack space="xs">
-                <Text className="text-typography-500">Email</Text>
-                <Input>
-                    <InputField value={username} onChangeText={(text) => setUsername(text)} type="text" />
-                    <InputSlot>
-                        <InputIcon className='mr-2' as={Mail} />
-                    </InputSlot>
-                </Input>
-            </VStack>
+                <VStack>
+                    <Text className='opacity-50 text-sm'>Signed in as</Text>
+                    <Text className='font-bold text-lg'>{session?.user?.email}</Text>
+                </VStack>
+            </HStack>
 
-            {/* <VStack space="xs">
-                <HStack className='justify-between'>
-                    <Text className="text-typography-500">Password</Text>
-
-
-                    <HStack >
-                        <Eye className='size-4' />
-
-                        <Pressable onPress={() => setShowPassword(!showPassword)}>
-                            <Text className="text-typography-500"> {showPassword ? "Hide" : "Show"}</Text>
-                        </Pressable>
-                    </HStack>
-                </HStack>
-
-                <Input>
-                    <InputField value={password} onChangeText={(text) => setPassword(text)} type={showPassword ? "text" : "password"} />
-                    <InputSlot>
-                        <InputIcon className='mr-2' as={Lock} />
-                    </InputSlot>
-                </Input>
-            </VStack> */}
-
-
-            {/* <Button size="md" variant="solid" action="primary" onPress={() => signInWithEmail()}>
-                <ButtonText>Sign in</ButtonText>
-            </Button> */}
-
-
-            <Button size="md" variant="link" action="secondary" onPress={() => supabase.auth.signOut()}>
+            <Button size="md" className='rounded-lg' variant="outline" action="primary" onPress={() => supabase.auth.signOut()}>
                 <ButtonText>Sign out</ButtonText>
             </Button>
+
+            <VStack className='gap-4 mt-4'>
+                <Text>Preferences</Text>
+
+                {/* <Divider /> */}
+
+                <HStack >
+                    <RefreshCw />
+                    <Text className='text-lg mr-auto'>Auto Sync</Text>
+                    <Switch />
+                </HStack>
+
+                <Divider />
+
+                <HStack>
+                    <Bell />
+                    <Text className='text-lg mr-auto'>Push Notifications</Text>
+                    <Switch />
+                </HStack>
+
+                <Divider />
+
+                <HStack>
+                    <Bell />
+                    <Text className='text-lg mr-auto'>Export Data</Text>
+                </HStack>
+            </VStack>
+
+
+
+            <VStack className='gap-4 mt-4'>
+                <Text>About</Text>
+
+                <HStack>
+                    <Bell />
+                    <Text className='text-lg mr-auto'>Terms of Service</Text>
+                </HStack>
+
+                <Divider />
+
+                <HStack>
+                    <Bell />
+                    <Text className='text-lg mr-auto'>Privacy Policy</Text>
+                </HStack>
+            </VStack>
         </VStack>
-
-
-
     )
 }
 
