@@ -9,8 +9,12 @@ import { supabase } from "../supabase";
 import { saveImageToAppData } from "@/src/lib/imageUtil";
 
 
+
+
 /*NOTE: THIS FILE SERVES AS THE SUPALEGEND CONFIG AND DEFINES THE BASE CONFIG AND THE FUNCTIONS
 NOTE: FUNCTIONS INSIDE HERE SHOULD ONLY BE USED BY THE USESUPALEGEND HOOK*/
+
+export type ResultsObservable = Observable<Record<string, {     id: string,     counter: number ,    classification: string | null ,    confidence: number | null  ,   created_at: string | null    , updated_at: string | null   ,  deleted: boolean | null   ,  user_id: string }>>
 
 
 const mmkvStorageId = "mmkvStorage";
@@ -82,7 +86,7 @@ export function createResultsObservable(user_id: string) {
 
 // Function to add a result
 export const addResult = (
-    results$:  Observable<Record<string, {     id: string,     counter: number ,    classification: string | null ,    confidence: number | null  ,   created_at: string | null    , updated_at: string | null   ,  deleted: boolean | null   ,  user_id: string }>>,
+    results$:  ResultsObservable,
     capturedImageUri: string,
     classification: string,
     confidence: number,

@@ -1,5 +1,5 @@
 import { enableReactTracking } from "@legendapp/state/config/enableReactTracking";
-import { createResultsObservable, addResult as _addResult } from "@/src/utils/supalegend/SupaLegend";
+import {createResultsObservable, addResult as _addResult, ResultsObservable} from "@/src/utils/supalegend/SupaLegend";
 import { useSession } from "@/src/hooks/useSession";
 import { useEffect, useState } from "react";
 import {useObservable} from "@legendapp/state/react";
@@ -11,7 +11,7 @@ enableReactTracking({
 });
 
 // Singleton for results observable
-const results$ = observable();
+const results$ = observable<ResultsObservable>();
 
 // Function to initialize results observable
 function initializeResults(user_id:string) {
@@ -24,7 +24,7 @@ function initializeResults(user_id:string) {
 function aggregateAndSortClassifications(data:any) {
   const values = Object.values(data);
 
-  const aggregated = values.reduce((acc, item) => {
+  const aggregated:any = values.reduce((acc:any, item:any):any => {
     if (!acc[item.classification]) {
       acc[item.classification] = {
         classification: item.classification,
@@ -35,7 +35,7 @@ function aggregateAndSortClassifications(data:any) {
     return acc;
   }, {});
 
-  return Object.values(aggregated).sort((a, b) => b.count - a.count);
+  return Object.values(aggregated).sort((a:any, b:any) => b.count - a.count);
 }
 
 
@@ -52,10 +52,8 @@ export const useSupaLegend = () => {
     initializeResults(user_id);
   }, [user_id]); // Ensure user_id is passed, but the observable itself is static
 
-  // Convert observable data to array format
-  const results = Object.values(observable(results$).get() || {});
-  // Aggregate and sort classifications
-  const topClassifications = aggregateAndSortClassifications(results);
+  const results = Object.values(observable(results$).get() || {});   // Convert observable data to array format
+  const topClassifications = aggregateAndSortClassifications(results);  // Aggregate and sort classifications
 
   // Function to clear results
   const clearResults = () => {
