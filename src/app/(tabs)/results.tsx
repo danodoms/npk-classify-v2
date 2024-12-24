@@ -20,13 +20,13 @@ import { useQuery } from "@powersync/react";
 import { getScanResultImageUriFromResultId } from "@/src/lib/imageUtil";
 import { useDatabase } from "@/src/hooks/useDatabase";
 import { observer } from "@legendapp/state/react";
-import { clearResults$, results$ as _results$ } from "@/src/utils/SupaLegend";
 import { observable, observe } from "@legendapp/state";
 import { enableReactTracking } from "@legendapp/state/config/enableReactTracking";
-import { useResults } from "@/src/utils/useResults";
+import {useSupaLegend} from "@/src/utils/supalegend/useSupaLegend";
 
 export default function ResultsScreen() {
-  const { results } = useResults();
+  const { results, clearResults } = useSupaLegend();
+
   /*console.log(topClassifications);*/
 
   const listFiles = async () => {
@@ -51,7 +51,7 @@ export default function ResultsScreen() {
           <ButtonText>Log Captured Images</ButtonText>
         </Button>
 
-        <Button onPress={clearResults$} className="flex flex-auto">
+        <Button onPress={clearResults} className="flex flex-auto">
           <ButtonText>Reset Database</ButtonText>
         </Button>
       </HStack>

@@ -42,13 +42,13 @@ import { Button, ButtonText } from "@/src/components/ui/button";
 import { FlashList } from "@shopify/flash-list";
 import { Center } from "@/src/components/ui/center";
 import { Skeleton } from "@/src/components/ui/skeleton";
-import { useResults } from "@/src/utils/useResults";
+import { useSupaLegend } from "@/src/utils/supalegend/useSupaLegend";
 import { Link } from "expo-router";
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const { width, height } = Dimensions.get("window");
-  const { results, topClassifications } = useResults();
+  const { results, topClassifications } = useSupaLegend();
 
   /*const progress = useSharedValue<number>(0);*/
 
@@ -163,7 +163,6 @@ export default function HomeScreen() {
             /*mode="parallax"*/
             pagingEnabled={true}
             scrollAnimationDuration={1500}
-            onSnapToItem={(index) => console.log("current index:", index)}
             renderItem={({ item, index }) => (
               <Box className="relative flex flex-auto bg-background-50 justify-center h-full overflow-hidden">
                 <Image

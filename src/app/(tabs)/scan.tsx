@@ -32,7 +32,7 @@ import * as Crypto from "expo-crypto";
 import { Circle } from "lucide-react-native";
 import { width } from "dom-helpers";
 import { HStack } from "@/src/components/ui/hstack";
-import { addResult } from "@/src/utils/SupaLegend";
+import {useSupaLegend} from "@/src/utils/supalegend/useSupaLegend";
 
 export default function ScanScreen() {
   const {
@@ -55,6 +55,8 @@ export default function ScanScreen() {
   const [cameraFacing, setCameraFacing] = useState<CameraPosition>("back");
   const device = useCameraDevice(cameraFacing);
 
+  const {addResult} = useSupaLegend()
+
   // Ensure TensorFlow is ready before classifying
   useEffect(() => {
     const initializeTf = async () => {
@@ -74,7 +76,7 @@ export default function ScanScreen() {
 
   if (!hasPermission) {
     return (
-      <VStack>
+      <VStack className="pt-16">
         <Text>We need your permission to show the camera</Text>
         <Button onPress={requestPermission}>
           <ButtonText>grant permission</ButtonText>

@@ -9,6 +9,7 @@ export const useSession = () => {
     // Get the current session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      console.log("session set", session?.user.id);
     });
 
     // Subscribe to session changes
@@ -16,6 +17,7 @@ export const useSession = () => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      console.log("session set", session?.user.id);
     });
 
     // Cleanup the subscription on unmount
