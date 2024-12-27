@@ -29,6 +29,14 @@ interface ScanResultDrawerProps {
   };
 }
 
+type ConfidenceRemark = "Weak" | "Moderate" | "Strong"
+
+function renderConfidenceRemark(confidence:number):ConfidenceRemark{
+  if(confidence >= 90) return "Strong";
+  if(confidence >= 70 && confidence <=89) return "Moderate";
+  return "Weak"
+}
+
 const ScanResultDrawer: React.FC<ScanResultDrawerProps> = ({ drawerState }) => {
   return (
     <Drawer
@@ -50,7 +58,7 @@ const ScanResultDrawer: React.FC<ScanResultDrawerProps> = ({ drawerState }) => {
               </Heading>
 
               <Text className="text-typography-400">
-                Confidence: {drawerState.confidence}%
+                {drawerState.confidence}% {renderConfidenceRemark(drawerState.confidence)} Confidence
               </Text>
             </VStack>
           ) : (
@@ -72,15 +80,20 @@ const ScanResultDrawer: React.FC<ScanResultDrawerProps> = ({ drawerState }) => {
                 }}
               ></Image>
 
-              <LottieView
-                style={styles.animation}
-                source={require("@/assets/animations/scan-animation.json")}
-                autoPlay
-                loop
-              />
+                  <LottieView
+                      style={styles.animation}
+                      source={require("@/assets/animations/scan-animation.json")}
+                      autoPlay
+                      loop
+                  />
+
+
             </Box>
           ) : (
-            <Skeleton variant="rounded" className="h-full w-full" />
+              <>
+                <Skeleton variant="rounded" className="h-full w-full" />
+              </>
+
           )}
         </DrawerBody>
         <DrawerFooter>

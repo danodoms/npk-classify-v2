@@ -10,7 +10,7 @@ import {
   useCameraPermission,
   type CameraPosition,
 } from "react-native-vision-camera";
-import { Image, View } from "react-native";
+import {Image, Pressable, View} from "react-native";
 import { VStack } from "@/src/components/ui/vstack";
 import { Text } from "@/src/components/ui/text";
 import { plantDiseaseClasses } from "@/assets/model/tflite/plant-disease/plant-disease-classes";
@@ -29,7 +29,7 @@ import { useTfliteModel } from "@/src/hooks/useTfliteModel";
 import LottieView from "lottie-react-native";
 import { saveImageToAppData } from "@/src/lib/imageUtil";
 import * as Crypto from "expo-crypto";
-import { Circle } from "lucide-react-native";
+import { Circle, Scan } from "lucide-react-native";
 import { width } from "dom-helpers";
 import { HStack } from "@/src/components/ui/hstack";
 import {useSupaLegend} from "@/src/utils/supalegend/useSupaLegend";
@@ -148,6 +148,7 @@ export default function ScanScreen() {
     addResult(resultId, classification, confidence);*/
 
     addResult(capturedImageUri, classification, confidence);
+    setIsDrawerOpen(false)
   }
 
   function RenderButtonComponent() {
@@ -173,7 +174,7 @@ export default function ScanScreen() {
         </Button>
         {/* } */}
 
-        <Button
+      {/*  <Button
           onPress={captureAndClassify}
           size="xl"
           variant="solid"
@@ -181,8 +182,13 @@ export default function ScanScreen() {
           className="rounded-full"
         >
           <ButtonText>Classify</ButtonText>
-          {/*<ButtonIcon></ButtonIcon>*/}
-        </Button>
+        </Button>*/}
+        <Pressable onPress={captureAndClassify}>
+          <Box className="bg-black rounded-full">
+            <Scan className=""/>
+          </Box>
+        </Pressable>
+
 
         <Button onPress={toggleCameraFacing} className="rounded-full">
           <ButtonText>Flip Camera</ButtonText>
