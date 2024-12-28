@@ -133,6 +133,41 @@ export default function ScanScreen() {
     runModelPrediction(manipulatedImage.uri, "float32", npkClassificationClasses);
   };
 
+
+
+  const importImageAndClassify = async () => {
+    // Request permission to access the gallery
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (permissionResult.granted) {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: false,
+        quality: 1,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        const selectedImageUri = result.assets[0].uri;
+
+        // Resize the image to fit the model requirements
+        const manipulatedImage = await ImageManipulator.manipulateAsync(
+            selectedImageUri,
+            [{ resize: { width: 128, height: 128 } }],
+            { format: SaveFormat.JPEG, base64: true }
+        );
+
+        setCapturedImageUri(manipulatedImage.uri);
+
+        // Run the model prediction on the selected image immediately
+        runModelPrediction(manipulatedImage.uri, "float32", npkClassificationClasses);
+        setDrawerOpen(true); // Open the drawer to show results
+      } else {
+        console.log("Image selection was canceled");
+      }
+    } else {
+      console.log("Permission to access gallery was denied");
+    }
+  };
+
   function saveResultToDatabase() {
     if (!capturedImageUri) return console.log("No captured image uri");
     if (!classification) return console.log("No captured classification");
@@ -169,7 +204,7 @@ export default function ScanScreen() {
           <ButtonText>Toggle Flash</ButtonText>
         </Button>
 
-        <Button className="rounded-full">
+        <Button className="rounded-full" onPress={importImageAndClassify}>
           <ButtonText>Import</ButtonText>
         </Button>
         {/* } */}
@@ -185,7 +220,7 @@ export default function ScanScreen() {
         </Button>*/}
 
         <Pressable onPress={captureAndClassify}>
-          <Box className="bg-black rounded-full">
+          <Box className="size-xl rounded-full border-4 border-white bg-transparent">
             <Scan className=""/>
           </Box>
         </Pressable>
