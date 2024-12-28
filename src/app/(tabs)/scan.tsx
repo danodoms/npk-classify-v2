@@ -38,14 +38,9 @@ import * as ImagePicker from "expo-image-picker";
 
 export default function ScanScreen() {
   const {
-    isDrawerOpen,
-    setIsDrawerOpen,
     confidence,
-    setConfidence,
     classification,
-    setClassification,
     isModelPredicting,
-    setIsModelPredicting,
     model,
     setModel,
     runModelPrediction,
@@ -56,6 +51,8 @@ export default function ScanScreen() {
   const { hasPermission, requestPermission } = useCameraPermission();
   const [cameraFacing, setCameraFacing] = useState<CameraPosition>("back");
   const device = useCameraDevice(cameraFacing);
+
+  const [isDrawerOpen, setDrawerOpen] = useState(false);
 
   const {addResult} = useSupaLegend()
 
@@ -118,10 +115,8 @@ export default function ScanScreen() {
     console.log("Image Captured");
 
     // Reset the states and show the drawer
-    setConfidence(null);
     setCapturedImageUri(null);
-    setClassification(null);
-    setIsDrawerOpen(true);
+    setDrawerOpen(true);
 
     // Resize the image to fit the model requirements
     const manipulatedImage = await ImageManipulator.manipulateAsync(
@@ -133,7 +128,6 @@ export default function ScanScreen() {
     console.log("Image Resized");
 
     setCapturedImageUri(manipulatedImage.uri);
-    setIsModelPredicting(true);
 
     // Convert image into correct format
     runModelPrediction(manipulatedImage.uri, "float32", npkClassificationClasses);
@@ -150,7 +144,7 @@ export default function ScanScreen() {
     addResult(resultId, classification, confidence);*/
 
     addResult(capturedImageUri, classification, confidence);
-    setIsDrawerOpen(false)
+    setDrawerOpen(false)
   }
 
   function RenderButtonComponent() {
@@ -189,6 +183,7 @@ export default function ScanScreen() {
         >
           <ButtonText>Classify</ButtonText>
         </Button>*/}
+
         <Pressable onPress={captureAndClassify}>
           <Box className="bg-black rounded-full">
             <Scan className=""/>
@@ -231,7 +226,7 @@ export default function ScanScreen() {
         drawerState={{
           saveResultCallback: saveResultToDatabase,
           isDrawerOpen,
-          setIsDrawerOpen,
+          setDrawerOpen,
           imageUri: capturedImageUri,
           classification,
           confidence,

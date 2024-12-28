@@ -21,7 +21,7 @@ import { StyleSheet } from "react-native";
 interface ScanResultDrawerProps {
   drawerState: {
     isDrawerOpen: boolean;
-    setIsDrawerOpen: (open: boolean) => void;
+    setDrawerOpen: (open: boolean) => void;
     saveResultCallback: () => void;
     imageUri: string | null;
     classification: string | null;
@@ -43,7 +43,7 @@ const ScanResultDrawer: React.FC<ScanResultDrawerProps> = ({ drawerState }) => {
       isOpen={drawerState.isDrawerOpen}
       /*isOpen={true}*/
       onClose={() => {
-        drawerState.setIsDrawerOpen(false);
+        drawerState.setDrawerOpen(false);
       }}
       size="md"
       anchor="bottom"
