@@ -96,6 +96,21 @@ export default function ScanScreen() {
     setCameraFacing((current) => (current === "back" ? "front" : "back"));
   }
 
+
+  const processImageAndClassify = async (imageUri: string) => {
+    // Resize the image to fit the model requirements
+    const manipulatedImage = await ImageManipulator.manipulateAsync(
+        imageUri,
+        [{ resize: { width: 128, height: 128 } }],
+        { format: SaveFormat.JPEG, base64: true }
+    );
+
+    setCapturedImageUri(manipulatedImage.uri);
+    runModelPrediction(manipulatedImage.uri, "float32", npkClassificationClasses);
+    setDrawerOpen(true); // Open the drawer to show results
+  };
+
+
   const captureAndClassify = async () => {
     if (!model) {
       console.log("Model is not loaded yet.");
@@ -106,37 +121,22 @@ export default function ScanScreen() {
       return;
     }
 
-    // Capture the image from the camera
     const photo = await cameraRef.current.takePhoto();
-
     if (!photo) {
       throw new Error("Photo is undefined, no image captured");
     }
+
     console.log("Image Captured");
 
-    // Reset the states and show the drawer
     setCapturedImageUri(null);
     setDrawerOpen(true);
 
-    // Resize the image to fit the model requirements
-    const manipulatedImage = await ImageManipulator.manipulateAsync(
-      "file://" + photo.path,
-      [{ resize: { width: 128, height: 128 } }],
-      { format: SaveFormat.JPEG, base64: true }
-    );
-
-    console.log("Image Resized");
-
-    setCapturedImageUri(manipulatedImage.uri);
-
-    // Convert image into correct format
-    runModelPrediction(manipulatedImage.uri, "float32", npkClassificationClasses);
+    await processImageAndClassify("file://" + photo.path); // Process the captured image
   };
 
 
 
   const importImageAndClassify = async () => {
-    // Request permission to access the gallery
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permissionResult.granted) {
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -147,19 +147,7 @@ export default function ScanScreen() {
 
       if (!result.canceled && result.assets[0]) {
         const selectedImageUri = result.assets[0].uri;
-
-        // Resize the image to fit the model requirements
-        const manipulatedImage = await ImageManipulator.manipulateAsync(
-            selectedImageUri,
-            [{ resize: { width: 128, height: 128 } }],
-            { format: SaveFormat.JPEG, base64: true }
-        );
-
-        setCapturedImageUri(manipulatedImage.uri);
-
-        // Run the model prediction on the selected image immediately
-        runModelPrediction(manipulatedImage.uri, "float32", npkClassificationClasses);
-        setDrawerOpen(true); // Open the drawer to show results
+        await processImageAndClassify(selectedImageUri); // Process the selected image
       } else {
         console.log("Image selection was canceled");
       }
@@ -172,11 +160,6 @@ export default function ScanScreen() {
     if (!capturedImageUri) return console.log("No captured image uri");
     if (!classification) return console.log("No captured classification");
     if (!confidence) return console.log("No confidence");
-
-    //@DEPRECATED
-    /*const resultId = Crypto.randomUUID();*/
-    /*saveImageToAppData(capturedImageUri, resultId);
-    addResult(resultId, classification, confidence);*/
 
     addResult(capturedImageUri, classification, confidence);
     setDrawerOpen(false)
