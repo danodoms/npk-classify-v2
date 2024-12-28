@@ -14,6 +14,7 @@ import {Image, Pressable, View} from "react-native";
 import { VStack } from "@/src/components/ui/vstack";
 import { Text } from "@/src/components/ui/text";
 import { plantDiseaseClasses } from "@/assets/model/tflite/plant-disease/plant-disease-classes";
+import {npkClassificationClasses} from "@/assets/model/tflite/npk-classification/npk-classification-classes";
 import * as ImageManipulator from "expo-image-manipulator";
 import {
   Button,
@@ -33,6 +34,7 @@ import { Circle, Scan } from "lucide-react-native";
 import { width } from "dom-helpers";
 import { HStack } from "@/src/components/ui/hstack";
 import {useSupaLegend} from "@/src/utils/supalegend/useSupaLegend";
+import * as ImagePicker from "expo-image-picker";
 
 export default function ScanScreen() {
   const {
@@ -69,7 +71,7 @@ export default function ScanScreen() {
 
   const loadModel = async () => {
     const tfliteModel = await loadTensorflowModel(
-      require("@/assets/model/tflite/plant-disease/plant-disease.tflite")
+      require("@/assets/model/tflite/npk-classification/npk-classification.tflite")
     );
     setModel(tfliteModel);
   };
@@ -124,7 +126,7 @@ export default function ScanScreen() {
     // Resize the image to fit the model requirements
     const manipulatedImage = await ImageManipulator.manipulateAsync(
       "file://" + photo.path,
-      [{ resize: { width: 224, height: 224 } }],
+      [{ resize: { width: 128, height: 128 } }],
       { format: SaveFormat.JPEG, base64: true }
     );
 
@@ -134,7 +136,7 @@ export default function ScanScreen() {
     setIsModelPredicting(true);
 
     // Convert image into correct format
-    runModelPrediction(manipulatedImage.uri, "float32", plantDiseaseClasses);
+    runModelPrediction(manipulatedImage.uri, "float32", npkClassificationClasses);
   };
 
   function saveResultToDatabase() {
@@ -171,6 +173,10 @@ export default function ScanScreen() {
         {/* {device?.hasFlash && */}
         <Button className="rounded-full">
           <ButtonText>Toggle Flash</ButtonText>
+        </Button>
+
+        <Button className="rounded-full">
+          <ButtonText>Import</ButtonText>
         </Button>
         {/* } */}
 
