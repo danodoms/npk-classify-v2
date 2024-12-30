@@ -35,6 +35,8 @@ import { width } from "dom-helpers";
 import { HStack } from "@/src/components/ui/hstack";
 import {useSupaLegend} from "@/src/utils/supalegend/useSupaLegend";
 import * as ImagePicker from "expo-image-picker";
+import {Center} from "@/src/components/ui/center";
+import axios from 'axios';
 
 export default function ScanScreen() {
   const {
@@ -52,6 +54,10 @@ export default function ScanScreen() {
   const [cameraFacing, setCameraFacing] = useState<CameraPosition>("back");
   const device = useCameraDevice(cameraFacing);
 
+
+
+  const API_URL = "http://127.0.0.1:8000/generate-heatmap/";
+  const[isXaiEnabled, setXaiEnabled] = useState(false);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
 
   const {addResult} = useSupaLegend()
@@ -181,18 +187,30 @@ export default function ScanScreen() {
       );
 
     return (
-      <HStack className="gap-4 mb-4 flex justify-center items-center ">
-        {/* {device?.hasFlash && */}
-        <Button className="rounded-full">
-          <ButtonText>Toggle Flash</ButtonText>
-        </Button>
+        <VStack>
+          <HStack className="gap-4 mb-4 flex justify-center items-center ">
+            <Pressable onPress={()=>setXaiEnabled(!isXaiEnabled)}>
+                <Text className="w-full bg-background">
+                  {isXaiEnabled ? (
+                      "Disable XAI"
+                  ):(
+                      "Enable XAI"
+                  )}
+                </Text>
+            </Pressable>
+          </HStack>
+          <HStack className="gap-4 mb-4 flex justify-center items-center ">
+            {/* {device?.hasFlash && */}
+            <Button className="rounded-full">
+              <ButtonText>Toggle Flash</ButtonText>
+            </Button>
 
-        <Button className="rounded-full" onPress={importImageAndClassify}>
-          <ButtonText>Import</ButtonText>
-        </Button>
-        {/* } */}
+            <Button className="rounded-full" onPress={importImageAndClassify}>
+              <ButtonText>Import</ButtonText>
+            </Button>
+            {/* } */}
 
-      {/*  <Button
+            {/*  <Button
           onPress={captureAndClassify}
           size="xl"
           variant="solid"
@@ -202,17 +220,19 @@ export default function ScanScreen() {
           <ButtonText>Classify</ButtonText>
         </Button>*/}
 
-        <Pressable onPress={captureAndClassify}>
-          <Box className="size-xl rounded-full border-4 border-white bg-transparent">
-            <Scan className=""/>
-          </Box>
-        </Pressable>
+            <Pressable onPress={captureAndClassify}>
+              <Box className="size-xl rounded-full border-4 border-white bg-transparent">
+                <Scan className=""/>
+              </Box>
+            </Pressable>
 
 
-        <Button onPress={toggleCameraFacing} className="rounded-full">
-          <ButtonText>Flip Camera</ButtonText>
-        </Button>
-      </HStack>
+            <Button onPress={toggleCameraFacing} className="rounded-full">
+              <ButtonText>Flip Camera</ButtonText>
+            </Button>
+          </HStack>
+        </VStack>
+
 
       /*<Circle color="white" style={} onPress={captureAndClassify} />*/
     );
