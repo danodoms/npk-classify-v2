@@ -39,6 +39,7 @@ import {Center} from "@/src/components/ui/center";
 import axios from 'axios';
 import { useToast, Toast,ToastTitle, ToastDescription } from '@/src/components/ui/toast';
 import {Icon} from "@/src/components/ui/icon"
+import blobToBase64 from 'react-native-blob-util';
 
 
 export default function ScanScreen() {
@@ -60,6 +61,7 @@ export default function ScanScreen() {
   const [capturedImageUri, setCapturedImageUri] = useState<string | null>(null); // To hold the image URI
   const { hasPermission, requestPermission } = useCameraPermission();
   const [cameraFacing, setCameraFacing] = useState<CameraPosition>("back");
+  const [xaiHeatmapUri, setXaiHeatmapUri] = useState<string | null>(null);
   const device = useCameraDevice(cameraFacing);
 
 
@@ -150,94 +152,67 @@ export default function ScanScreen() {
   }
 
 
- /* const processImageAndClassify = async (imageUri: string) => {
-    // Resize the image to fit the model requirements
-    const manipulatedImage = await ImageManipulator.manipulateAsync(
-        imageUri,
-        [{ resize: { width: 128, height: 128 } }],
-        { format: SaveFormat.JPEG, base64: true }
-    );
-
-    setCapturedImageUri(manipulatedImage.uri);
-    runModelPrediction(manipulatedImage.uri, "float32", npkClassificationClasses);
-    setDrawerOpen(true); // Open the drawer to show results
-  };*/
+  async function convertBlobToBase64(blob:any) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob); // Converts Blob to Base64 data URL
+    });
+  }
 
 
   const processImageAndClassify = async (imageUri: string) => {
-    // Resize the image to fit the model requirements
+    // Reset predictions and open the result drawer
     resetPrediction()
+    setDrawerOpen(true);
 
+    // Resize the image to fit the model requirements
     const manipulatedImage = await ImageManipulator.manipulateAsync(
         imageUri,
         [{ resize: { width: 128, height: 128 } }],
         { format: SaveFormat.JPEG, base64: true }
     );
-
     setCapturedImageUri(manipulatedImage.uri);
 
-    if (isXaiEnabled) {
-      // Convert the image URI to a Blob
-      try {
-       /* const response = await fetch(manipulatedImage.uri);
-        const blob = await response.blob();
-        console.log(blob.type); */
-
-
-        // Prepare the FormData to send to the API
-        const formData = new FormData();
-        formData.append('file', {
-          uri: manipulatedImage.uri,
-          name: 'image.jpg',
-          type: 'image/jpeg',
-        });
-
-        // Send the image as a FormData to the API
-        const apiResponse = await axios.post(API_URL, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-
-        console.log("adjhrfujidhrthujiwsedrgbrfhujwe")
-
-
-        if (apiResponse.data) {
-          // Process XAI results here (you might want to update the UI or state)
-          /*console.log("XAI Response:", apiResponse.data);*/
-          console.log(apiResponse.headers)
-          setClassification(apiResponse.headers["prediction-label"])
-          setConfidence(apiResponse.headers["prediction-confidence"])
-
-          console.log(
-              apiResponse.headers["prediction-label"]
-          )
-
-          console.log(
-              apiResponse.headers["prediction-confidence"]
-          )
-
-          // Set classification or confidence from XAI response if needed
-
-        } else {
-          console.log("XAI API returned no results.");
-        }
-
-      } catch (error) {
-        console.error("Error calling XAI API:", error.response?.data);
-        showNetworkErrorToast()
-        // Fallback to the offline model if XAI API fails
-        /*runModelPrediction(manipulatedImage.uri, "float32", npkClassificationClasses);*/
-      }
-    } else {
-
-      // Default to the offline model prediction when XAI is disabled
+    // If XAI is disabled, use offline model prediction
+    if (!isXaiEnabled){
       runModelPrediction(manipulatedImage.uri, "float32", npkClassificationClasses);
+      return
     }
 
-    setDrawerOpen(true); // Open the drawer to show results
-  };
+    // Prepare the FormData to send to the API
+    const formData = new FormData();
+    formData.append('file',{
+      uri: manipulatedImage.uri,
+      name: 'image.jpg',
+      type: 'image/jpeg'});
 
+    // Send image to API and process the response
+    axios.post(API_URL, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+        .then(response=>{
+          // Process XAI results here (you might want to update the UI or state)
+          /*console.log("XAI Response:", apiResponse.data);*/
+          console.log(response.headers)
+
+          setClassification(response.headers["prediction-label"])
+          setConfidence(response.headers["prediction-confidence"])
+
+          // Convert arraybuffer to blob
+          const blob = new Blob([response.data], { type: 'image/jpeg' });
+          // Create object URL from blob
+          const xaiUri = URL.createObjectURL(blob);
+          setXaiHeatmapUri(xaiUri);
+        })
+        .catch(error=>{
+          console.error("Error calling XAI API:", error.response?.data);
+          showNetworkErrorToast()
+        });
+    }
 
 
   const captureAndClassify = async () => {
@@ -331,17 +306,6 @@ export default function ScanScreen() {
             <Button className="rounded-full" onPress={importImageAndClassify}>
               <ButtonText>Import</ButtonText>
             </Button>
-            {/* } */}
-
-            {/*  <Button
-          onPress={captureAndClassify}
-          size="xl"
-          variant="solid"
-          action="primary"
-          className="rounded-full"
-        >
-          <ButtonText>Classify</ButtonText>
-        </Button>*/}
 
             <Pressable onPress={captureAndClassify}>
               <Box className="size-xl rounded-full border-4 border-white bg-transparent">
@@ -355,9 +319,6 @@ export default function ScanScreen() {
             </Button>
           </HStack>
         </VStack>
-
-
-      /*<Circle color="white" style={} onPress={captureAndClassify} />*/
     );
   }
 
@@ -389,6 +350,7 @@ export default function ScanScreen() {
           isDrawerOpen,
           setDrawerOpen,
           imageUri: capturedImageUri,
+          xaiHeatmapUri,
           classification,
           confidence,
         }}

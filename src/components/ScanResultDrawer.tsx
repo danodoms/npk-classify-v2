@@ -16,7 +16,8 @@ import { Skeleton, SkeletonText } from "@/src/components/ui/skeleton";
 import { VStack } from "@/src/components/ui/vstack";
 import { Box } from "@/src/components/ui/box";
 import LottieView from "lottie-react-native";
-import { StyleSheet } from "react-native";
+import {Pressable, StyleSheet} from "react-native";
+import {Center} from "@/src/components/ui/center";
 
 interface ScanResultDrawerProps {
   drawerState: {
@@ -24,6 +25,7 @@ interface ScanResultDrawerProps {
     setDrawerOpen: (open: boolean) => void;
     saveResultCallback: () => void;
     imageUri: string | null;
+    xaiHeatmapUri: string | null;
     classification: string | null;
     confidence: number | null;
   };
@@ -37,11 +39,21 @@ function renderConfidenceRemark(confidence:number):ConfidenceRemark{
   return "Weak"
 }
 
+
+
 const ScanResultDrawer: React.FC<ScanResultDrawerProps> = ({ drawerState }) => {
+
+  const [isXaiHeatmapShown, setXaiHeatmapShown] = useState(true);
+
+  function handleSetXaiHeatmapShown(){
+    if(drawerState.xaiHeatmapUri){
+      setXaiHeatmapShown(!isXaiHeatmapShown);
+    }
+  }
+
   return (
     <Drawer
       isOpen={drawerState.isDrawerOpen}
-      /*isOpen={true}*/
       onClose={() => {
         drawerState.setDrawerOpen(false);
       }}
@@ -68,44 +80,56 @@ const ScanResultDrawer: React.FC<ScanResultDrawerProps> = ({ drawerState }) => {
             /*</VStack>*/
           )}
         </DrawerHeader>
-        <DrawerBody>
+        <DrawerBody className=" border-red-500">
           {drawerState.imageUri ? (
-            <Box>
-              <Image
-                size="2xl"
-                className="min-h-full min-w-full rounded-md"
-                alt="classification-image"
-                source={{
-                  uri: drawerState.imageUri,
-                }}
-              ></Image>
+            <Center className="border-green-500 min-w-full">
+              <Pressable onPress={handleSetXaiHeatmapShown}>
+                <Image
+                    size="2xl"
+                  className=" rounded-md min-w-full"
+                  alt="classification-image"
+                  source={{
+                    uri: drawerState.imageUri,
+                  }}
+                />
 
-                  <LottieView
-                      style={styles.animation}
-                      source={require("@/assets/animations/scan-animation.json")}
-                      autoPlay
-                      loop
-                  />
+                    <LottieView
+                        style={styles.animation}
+                        source={require("@/assets/animations/scan-animation.json")}
+                        autoPlay
+                        loop
+                    />
 
+                { drawerState.xaiHeatmapUri && (
+                    <Text className="mt-2 opacity-50 text-center">
+                      {isXaiHeatmapShown ? ("Tap to view original image") : ("Tap to view XAI Heatmap")}
+                    </Text>
+                )}
+              </Pressable>
 
-            </Box>
+            </Center>
+
           ) : (
               <>
-                <Skeleton variant="rounded" className="h-full w-full" />
+                <Skeleton variant="rounded" className="h-full w-full border  " />
               </>
 
           )}
         </DrawerBody>
-        <DrawerFooter>
-          <Button
-            onPress={() => {
-              drawerState.saveResultCallback();
-            }}
-            className="flex-1"
-          >
-            <ButtonText>Save and close</ButtonText>
-          </Button>
-        </DrawerFooter>
+
+        {drawerState.confidence && drawerState.classification && drawerState.imageUri && (
+            <DrawerFooter>
+              <Button
+                  onPress={() => {
+                    drawerState.saveResultCallback();
+                  }}
+                  className="flex-1"
+              >
+                <ButtonText>Save and close</ButtonText>
+              </Button>
+            </DrawerFooter>
+        ) }
+
       </DrawerContent>
     </Drawer>
   );
