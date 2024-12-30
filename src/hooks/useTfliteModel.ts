@@ -19,6 +19,14 @@ export function useTfliteModel() {
   // Reference to the loaded TensorFlow Lite model
   const [model, setModel] = useState<TensorflowModel | null>(null);
 
+
+
+
+  const resetPrediction = ()=>{
+    setConfidence(null);
+    setClassification(null);
+  }
+
   /**
    * Runs the model prediction on a provided image.
    * This function orchestrates the process of:
@@ -163,7 +171,10 @@ export function useTfliteModel() {
   return {
     isModelPredicting, // Tracks if the model is currently processing an image
     classification, // The final classification result (e.g., disease name)
+    setClassification,
+    setConfidence,
     confidence, // The confidence percentage of the classification
+    resetPrediction,
     model, // The loaded TensorFlow Lite model instance
     setModel, // Setter for the TensorFlow Lite model
     runModelPrediction, // Function to classify an image using the model

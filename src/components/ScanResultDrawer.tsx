@@ -53,7 +53,7 @@ const ScanResultDrawer: React.FC<ScanResultDrawerProps> = ({ drawerState }) => {
         <DrawerHeader>
           {drawerState.classification && drawerState.confidence ? (
             <VStack className="">
-              <Heading size="xl" className="text-center">
+              <Heading size="xl" className="text-left">
                 {drawerState.classification}
               </Heading>
 
