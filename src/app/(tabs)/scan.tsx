@@ -40,6 +40,7 @@ import axios from 'axios';
 import { useToast, Toast,ToastTitle, ToastDescription } from '@/src/components/ui/toast';
 import {Icon} from "@/src/components/ui/icon"
 import blobToBase64 from 'react-native-blob-util';
+import { fromByteArray } from 'base64-js';
 
 
 export default function ScanScreen() {
@@ -165,12 +166,13 @@ export default function ScanScreen() {
   const processImageAndClassify = async (imageUri: string) => {
     // Reset predictions and open the result drawer
     resetPrediction()
+    setXaiHeatmapUri(null)
     setDrawerOpen(true);
 
     // Resize the image to fit the model requirements
     const manipulatedImage = await ImageManipulator.manipulateAsync(
         imageUri,
-        [{ resize: { width: 128, height: 128 } }],
+        [{ resize: { width: 224, height: 224 } }],
         { format: SaveFormat.JPEG, base64: true }
     );
     setCapturedImageUri(manipulatedImage.uri);
@@ -193,6 +195,7 @@ export default function ScanScreen() {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
+      responseType:"arraybuffer"
       })
         .then(response=>{
           // Process XAI results here (you might want to update the UI or state)
@@ -202,14 +205,20 @@ export default function ScanScreen() {
           setClassification(response.headers["prediction-label"])
           setConfidence(response.headers["prediction-confidence"])
 
-          // Convert arraybuffer to blob
-          const blob = new Blob([response.data], { type: 'image/jpeg' });
+          console.log("iom hererererere")
           // Create object URL from blob
-          const xaiUri = URL.createObjectURL(blob);
-          setXaiHeatmapUri(xaiUri);
+         /* const xaiUri = URL.createObjectURL(response.data);*/
+          console.log("iom hererererere")
+
+          const bytes = new Uint8Array(response.data);
+          const base64String = fromByteArray(bytes);
+          const imageUri = `data:image/jpeg;base64,${base64String}`;
+          setXaiHeatmapUri(imageUri);
+          /*console.log(xaiUri)*/
+       /*   console.log(response.data);*/
         })
         .catch(error=>{
-          console.error("Error calling XAI API:", error.response?.data);
+          console.error("Error calling XAI API:", error);
           showNetworkErrorToast()
         });
     }

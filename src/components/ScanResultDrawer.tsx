@@ -43,7 +43,7 @@ function renderConfidenceRemark(confidence:number):ConfidenceRemark{
 
 const ScanResultDrawer: React.FC<ScanResultDrawerProps> = ({ drawerState }) => {
 
-  const [isXaiHeatmapShown, setXaiHeatmapShown] = useState(true);
+  const [isXaiHeatmapShown, setXaiHeatmapShown] = useState(false);
 
   function handleSetXaiHeatmapShown(){
     if(drawerState.xaiHeatmapUri){
@@ -89,7 +89,7 @@ const ScanResultDrawer: React.FC<ScanResultDrawerProps> = ({ drawerState }) => {
                   className=" rounded-md min-w-full"
                   alt="classification-image"
                   source={{
-                    uri: drawerState.imageUri,
+                    uri:  isXaiHeatmapShown ? drawerState.xaiHeatmapUri : drawerState.imageUri,
                   }}
                 />
 
