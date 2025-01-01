@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
   Drawer,
   DrawerBackdrop,
@@ -22,6 +22,7 @@ import {Center} from "@/src/components/ui/center";
 interface ScanResultDrawerProps {
   drawerState: {
     isDrawerOpen: boolean;
+    isError: boolean;
     setDrawerOpen: (open: boolean) => void;
     saveResultCallback: () => void;
     imageUri: string | null;
@@ -44,6 +45,8 @@ function renderConfidenceRemark(confidence:number):ConfidenceRemark{
 const ScanResultDrawer: React.FC<ScanResultDrawerProps> = ({ drawerState }) => {
 
   const [isXaiHeatmapShown, setXaiHeatmapShown] = useState(false);
+
+  const isPredictionDone = drawerState.classification && drawerState.confidence && drawerState.imageUri;
 
   function handleSetXaiHeatmapShown(){
     if(drawerState.xaiHeatmapUri){
@@ -89,20 +92,23 @@ const ScanResultDrawer: React.FC<ScanResultDrawerProps> = ({ drawerState }) => {
                   className=" rounded-md min-w-full"
                   alt="classification-image"
                   source={{
-                    uri:  isXaiHeatmapShown ? drawerState.xaiHeatmapUri : drawerState.imageUri,
+                    uri:  isXaiHeatmapShown && drawerState.xaiHeatmapUri ? drawerState.xaiHeatmapUri : drawerState.imageUri,
                   }}
                 />
 
+                {!isPredictionDone && (
                     <LottieView
                         style={styles.animation}
                         source={require("@/assets/animations/scan-animation.json")}
                         autoPlay
                         loop
                     />
+                )}
+
 
                 { drawerState.xaiHeatmapUri && (
                     <Text className="mt-2 opacity-50 text-center">
-                      {isXaiHeatmapShown ? ("Tap to view original image") : ("Tap to view XAI Heatmap")}
+                      {isXaiHeatmapShown ? ("Tap to view original Image") : ("Tap to view XAI Heatmap")}
                     </Text>
                 )}
               </Pressable>

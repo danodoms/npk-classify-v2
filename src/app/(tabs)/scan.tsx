@@ -14,7 +14,7 @@ import {Image, Pressable, View} from "react-native";
 import { VStack } from "@/src/components/ui/vstack";
 import { Text } from "@/src/components/ui/text";
 import { plantDiseaseClasses } from "@/assets/model/tflite/plant-disease/plant-disease-classes";
-import {npkClassificationClasses} from "@/assets/model/tflite/npk-classification/npk-classification-classes";
+import {npkClassifierClasses} from "@/assets/model/tflite/npk-classifier/npk-classifier-classes";
 import * as ImageManipulator from "expo-image-manipulator";
 import {
   Button,
@@ -63,6 +63,7 @@ export default function ScanScreen() {
   const { hasPermission, requestPermission } = useCameraPermission();
   const [cameraFacing, setCameraFacing] = useState<CameraPosition>("back");
   const [xaiHeatmapUri, setXaiHeatmapUri] = useState<string | null>(null);
+  const [isError, setIsError] = useState<boolean>(false);
   const device = useCameraDevice(cameraFacing);
 
 
@@ -106,7 +107,9 @@ export default function ScanScreen() {
       ),})
   }
 
-  const API_URL = "http://10.0.2.2:8000/generate-heatmap/";
+const API_URL = "http://10.0.2.2:8000/generate-heatmap/";
+/*  const API_URL = "https://xr-vision-backend.onrender.com/generate-heatmap/";*/
+
   const[isXaiEnabled, setXaiEnabled] = useState(false);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
 
@@ -124,7 +127,7 @@ export default function ScanScreen() {
 
   const loadModel = async () => {
     const tfliteModel = await loadTensorflowModel(
-      require("@/assets/model/tflite/npk-classification/npk-classification.tflite")
+      require("@/assets/model/tflite/npk-classifier/npk-classifier-v3.tflite")
     );
     setModel(tfliteModel);
   };
@@ -153,16 +156,6 @@ export default function ScanScreen() {
   }
 
 
-  async function convertBlobToBase64(blob:any) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob); // Converts Blob to Base64 data URL
-    });
-  }
-
-
   const processImageAndClassify = async (imageUri: string) => {
     // Reset predictions and open the result drawer
     resetPrediction()
@@ -179,7 +172,7 @@ export default function ScanScreen() {
 
     // If XAI is disabled, use offline model prediction
     if (!isXaiEnabled){
-      runModelPrediction(manipulatedImage.uri, "float32", npkClassificationClasses);
+      runModelPrediction(manipulatedImage.uri, "float32", npkClassifierClasses);
       return
     }
 
@@ -195,27 +188,26 @@ export default function ScanScreen() {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
+      params: {
+          'enable_gradcam': true
+      },
       responseType:"arraybuffer"
       })
         .then(response=>{
-          // Process XAI results here (you might want to update the UI or state)
-          /*console.log("XAI Response:", apiResponse.data);*/
-          console.log(response.headers)
-
+          setConfidence((parseFloat(response.headers["prediction-confidence"]*100)).toFixed(2));
           setClassification(response.headers["prediction-label"])
-          setConfidence(response.headers["prediction-confidence"])
 
-          console.log("iom hererererere")
-          // Create object URL from blob
-         /* const xaiUri = URL.createObjectURL(response.data);*/
-          console.log("iom hererererere")
+         /* //handle cases where endpoint body is empty
+          if(!response.data || !response.data.length){
+            console.log("endpoint didnt return gradcam image");
+            setXaiHeatmapUri(null)
+            return
+          }*/
 
           const bytes = new Uint8Array(response.data);
           const base64String = fromByteArray(bytes);
           const imageUri = `data:image/jpeg;base64,${base64String}`;
           setXaiHeatmapUri(imageUri);
-          /*console.log(xaiUri)*/
-       /*   console.log(response.data);*/
         })
         .catch(error=>{
           console.error("Error calling XAI API:", error);
@@ -357,6 +349,7 @@ export default function ScanScreen() {
         drawerState={{
           saveResultCallback: saveResultToDatabase,
           isDrawerOpen,
+          isError,
           setDrawerOpen,
           imageUri: capturedImageUri,
           xaiHeatmapUri,
