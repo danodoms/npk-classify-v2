@@ -292,16 +292,20 @@ export default function ScanScreen() {
         </Text>
       );*/
 
-    if (isModelPredicting)
+    /*if (isModelPredicting)
       return (
         <Text size="lg" className="text-center font-bold">
           Classifying Image...
         </Text>
-      );
+      );*/
 
     return (
         <VStack className="p-4">
-          <HStack className="gap-4 mb-8 flex justify-evenly items-center w-full ">
+          {/*<HStack className="gap-4 mb-4 flex justify-center items-center w-full ">
+            <Text className="font-medium opacity-80">Loading Model...</Text>
+          </HStack>*/}
+
+          <HStack className="gap-4 mb-8 flex justify-center items-center w-full ">
                 {isXaiEnabled ? (
                     <Button size="md" variant="solid" className="rounded-full" onPress={()=>setXaiEnabled(false)}>
                       <ButtonText >Disable XAI</ButtonText>
@@ -314,7 +318,7 @@ export default function ScanScreen() {
                     </Button>
                 )}
             <Button size="md" variant="solid" className="rounded-full" onPress={()=>setDrawerOpen(true)}>
-              <ButtonText >Show Drawer</ButtonText>
+              {/*<ButtonText >Show Drawer</ButtonText>*/}
               <ButtonIcon as={ChevronUp} />
             </Button>
           </HStack>

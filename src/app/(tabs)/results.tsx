@@ -94,9 +94,9 @@ export default function ResultsScreen() {
       </HStack>*/}
 
       <VStack className=" border-red-500 rounded-md">
-        <ScrollView>
+        <ScrollView className='flex gap-8'>
           {results.map((result) => (
-            <HStack key={result.id} className="pt-4 gap-4">
+            <HStack key={result.id} className="gap-4 border-red-500 px-4 py-2">
               <Image
                 className="rounded-md border-white-50 border-2"
                 source={{
@@ -110,7 +110,7 @@ export default function ResultsScreen() {
                   {result.classification}
                 </Text>
                 <Text className="opacity-50">{result.confidence}% Confidence</Text>
-                <Text className="opacity-50 text-sm">{formatTimestamp(result.created_at || "", false)}</Text>
+                <Text className="opacity-50 text-sm">{result.created_at && formatTimestamp(result.created_at || "", false)}</Text>
               </VStack>
             </HStack>
           ))}
