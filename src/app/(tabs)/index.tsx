@@ -53,7 +53,7 @@ export default function HomeScreen() {
   /*const progress = useSharedValue<number>(0);*/
 
   return (
-    <VStack className="p-4 gap-4 h-full bg-background-0 pt-12">
+    <VStack className="p-4 gap-4 h-full bg-background-0 pt-20">
       <HStack className=" rounded-md mb-4 justify-between flex">
         <HStack className="gap-1">
           <Heading className="flex flex-auto" size="3xl">
@@ -65,11 +65,11 @@ export default function HomeScreen() {
         <Link href="/screens/account">
           <Avatar size="md" className="flex">
             <AvatarFallbackText>John Doe</AvatarFallbackText>
-            <AvatarImage
+            {/*<AvatarImage
               source={{
                 uri: "https://avatars.githubusercontent.com/u/165539900?v=4",
               }}
-            />
+            />*/}
             <AvatarBadge />
           </Avatar>
         </Link>

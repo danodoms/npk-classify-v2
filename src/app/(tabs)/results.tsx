@@ -74,14 +74,14 @@ export default function ResultsScreen() {
   if(!results.length){
     return(
         <Center className="gap-4 pt-12 bg-background-0 border-green-500 h-full">
-          <Text className="opacity-50 text-center">No results</Text>
+          <Text className="opacity-50 text-center text-lg">No results</Text>
         </Center>
     )
   }
 
 
   return (
-    <VStack className="gap-4 pt-12 bg-background-0 border-green-500 h-full">
+    <VStack className="gap-4 pt-20 bg-background-0 border-green-500 h-full">
       {/*<Text>Total Results: {Object.keys(results).length}</Text>
       <HStack className="gap-4 items-center w-full">
         <Button onPress={listFiles} className="flex flex-auto">

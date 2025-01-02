@@ -285,12 +285,12 @@ export default function ScanScreen() {
   }
 
   function RenderButtonComponent() {
-    if (!isTfReady)
+   /* if (!isTfReady)
       return (
         <Text size="lg" className="text-center font-bold">
           Loading AI Model...
         </Text>
-      );
+      );*/
 
     if (isModelPredicting)
       return (
@@ -301,45 +301,25 @@ export default function ScanScreen() {
 
     return (
         <VStack className="p-4">
-          <HStack className="gap-4 mb-4 flex justify-center items-center ">
-
-          </HStack>
-
-          <HStack className="gap-4 mb-8 flex justify-center items-center ">
-            {/*<Pressable onPress={()=>setXaiEnabled(!isXaiEnabled)}>
-              <Text className="w-full bg-background font-bold">
-                {isXaiEnabled ? (
-                    "XAI Visualizations Enabled"
-                ):(
-                    "XAI Visualizations Disabled"
-                )}
-              </Text>
-            </Pressable>*/}
-
-
-
+          <HStack className="gap-4 mb-8 flex justify-evenly items-center w-full ">
                 {isXaiEnabled ? (
                     <Button size="md" variant="solid" className="rounded-full" onPress={()=>setXaiEnabled(false)}>
-                      <ButtonText >Tab to disable XAI</ButtonText>
+                      <ButtonText >Disable XAI</ButtonText>
                       <ButtonIcon as={BrainCog} />
                     </Button>
                 ):(
                     <Button size="md" variant="outline" className="rounded-full" onPress={()=>setXaiEnabled(true)}>
-                      <ButtonText >Tab to enable XAI</ButtonText>
+                      <ButtonText >Enable XAI</ButtonText>
                       <ButtonIcon as={Brain} />
                     </Button>
                 )}
-
-
             <Button size="md" variant="solid" className="rounded-full" onPress={()=>setDrawerOpen(true)}>
               <ButtonText >Show Drawer</ButtonText>
               <ButtonIcon as={ChevronUp} />
             </Button>
-
-
           </HStack>
 
-          <HStack className="gap-16 mb-4 flex justify-center items-center border-red-500">
+          <HStack className="mb-4 flex justify-evenly items-center border-red-500">
             {/* {device?.hasFlash && */}
             {/*<Button className="rounded-full">
               <ButtonText>Toggle Flash</ButtonText>
@@ -350,18 +330,14 @@ export default function ScanScreen() {
             </Button>
 
             <Pressable onPress={captureAndClassify}>
-              <Box className="size-20 rounded-full border-4 border-white bg-transparent">
-                <Scan className=""/>
-              </Box>
+              <Center className="size-20 rounded-full border-4 border-white">
+                <Center className="size-16 rounded-full bg-white opacity-20"/>
+              </Center>
             </Pressable>
-
-
 
             <Button size="xl"  variant="solid" className="rounded-full p-4" onPress={toggleCameraFacing}>
               <ButtonIcon size="xl" as={RefreshCw} />
             </Button>
-
-
           </HStack>
         </VStack>
     );
