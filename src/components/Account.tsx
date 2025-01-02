@@ -87,31 +87,6 @@ export default function Account({ session }: { session: Session }) {
     }
 
     return (
-        // <View style={styles.container}>
-        //     <View style={[styles.verticallySpaced, styles.mt20]}>
-        //         <Input label="Email" value={session?.user?.email} disabled />
-        //     </View>
-        //     <View >
-        //         <Input label="Username" value={username || ''} onChangeText={(text) => setUsername(text)} />
-        //     </View>
-        //     <View >
-        //         <Input label="Website" value={website || ''} onChangeText={(text) => setWebsite(text)} />
-
-        //     </View>
-
-        //     <View style={[styles.verticallySpaced, styles.mt20]}>
-        //         <Button
-        //   title={loading ? 'Loading ...' : 'Update'}
-        //   onPress={() => updateProfile({ username, website, avatar_url: avatarUrl })}
-        //   disabled={loading}
-        // />
-        //     </View>
-
-        //     <View style={styles.verticallySpaced}>
-        //         <Button title="Sign Out" onPress={() => supabase.auth.signOut()} />
-        //     </View>
-        // </View>
-
         <VStack className='align-items-center justify-start h-full gap-4 p-4 bg-background-0'>
             <HStack className='gap-4 border-0 border-background-100 border-opacity-50 rounded-md'>
                 <Avatar size="md">

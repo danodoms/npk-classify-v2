@@ -107,8 +107,8 @@ export default function ScanScreen() {
       ),})
   }
 
-const API_URL = "http://10.0.2.2:8000/generate-heatmap/";
-/*  const API_URL = "https://xr-vision-backend.onrender.com/generate-heatmap/";*/
+/*const API_URL = "http://10.0.2.2:8000/generate-heatmap/";*/
+  const API_URL = "https://xr-vision-backend.onrender.com/generate-heatmap/";
 
   const[isXaiEnabled, setXaiEnabled] = useState(false);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -288,6 +288,13 @@ const API_URL = "http://10.0.2.2:8000/generate-heatmap/";
     return (
         <VStack>
           <HStack className="gap-4 mb-4 flex justify-center items-center ">
+            <Pressable onPress={()=>setDrawerOpen(true)}>
+              <Text className="w-full bg-background font-bold text-lg">
+                Show Drawer
+              </Text>
+            </Pressable>
+          </HStack>
+          <HStack className="gap-4 mb-4 flex justify-center items-center ">
             <Pressable onPress={()=>setXaiEnabled(!isXaiEnabled)}>
                 <Text className="w-full bg-background font-bold text-lg">
                   {isXaiEnabled ? (
@@ -347,6 +354,7 @@ const API_URL = "http://10.0.2.2:8000/generate-heatmap/";
 
       <ScanResultDrawer
         drawerState={{
+
           saveResultCallback: saveResultToDatabase,
           isDrawerOpen,
           isError,
