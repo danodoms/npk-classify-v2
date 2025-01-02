@@ -23,6 +23,7 @@ import { observer } from "@legendapp/state/react";
 import { observable, observe } from "@legendapp/state";
 import { enableReactTracking } from "@legendapp/state/config/enableReactTracking";
 import {useSupaLegend} from "@/src/utils/supalegend/useSupaLegend";
+import {Center} from "@/src/components/ui/center";
 
 export default function ResultsScreen() {
   const { results, clearResults } = useSupaLegend();
@@ -43,9 +44,45 @@ export default function ResultsScreen() {
     }
   };
 
+  function formatTimestamp(timestamp:string, includeTimeZone = true) {
+    // Parse the timestamp into a Date object
+    const date = new Date(timestamp);
+
+    // Get the components of the date
+    const options = {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    };
+
+    // Add timeZoneName if includeTimeZone is true
+    if (includeTimeZone) {
+      (options as Intl.DateTimeFormatOptions).timeZoneName = "short";
+    }
+
+    // Format the date to a readable string
+    return date.toLocaleString("en-US", options as Intl.DateTimeFormatOptions);
+  }
+
+// Example usage
+  const timestamp = "2025-01-02 04:47:49.176207+00";
+  console.log(formatTimestamp(timestamp, true));  // With tim
+
+  if(!results.length){
+    return(
+        <Center className="gap-4 pt-12 bg-background-0 border-green-500 h-full">
+          <Text className="opacity-50 text-center">No results</Text>
+        </Center>
+    )
+  }
+
+
   return (
-    <VStack className="p-4 gap-4 pt-12 bg-background-0">
-      <Text>Total Results: {Object.keys(results).length}</Text>
+    <VStack className="gap-4 pt-12 bg-background-0 border-green-500 h-full">
+      {/*<Text>Total Results: {Object.keys(results).length}</Text>
       <HStack className="gap-4 items-center w-full">
         <Button onPress={listFiles} className="flex flex-auto">
           <ButtonText>Log Captured Images</ButtonText>
@@ -54,9 +91,9 @@ export default function ResultsScreen() {
         <Button onPress={clearResults} className="flex flex-auto">
           <ButtonText>Reset Database</ButtonText>
         </Button>
-      </HStack>
+      </HStack>*/}
 
-      <VStack>
+      <VStack className=" border-red-500 rounded-md">
         <ScrollView>
           {results.map((result) => (
             <HStack key={result.id} className="pt-4 gap-4">
@@ -72,8 +109,8 @@ export default function ResultsScreen() {
                 <Text className="font-bold text-lg">
                   {result.classification}
                 </Text>
-                <Text className="">{result.confidence}%</Text>
-                <Text>{result.created_at}</Text>
+                <Text className="opacity-50">{result.confidence}% Confidence</Text>
+                <Text className="opacity-50 text-sm">{formatTimestamp(result.created_at || "", false)}</Text>
               </VStack>
             </HStack>
           ))}

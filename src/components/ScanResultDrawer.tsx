@@ -25,6 +25,7 @@ interface ScanResultDrawerProps {
     isError: boolean;
     setDrawerOpen: (open: boolean) => void;
     saveResultCallback: () => void;
+    isResultSaved:boolean;
     imageUri: string | null;
     xaiHeatmapUri: string | null;
     classification: string | null;
@@ -40,12 +41,30 @@ function renderConfidenceRemark(confidence:number):ConfidenceRemark{
   return "Weak"
 }
 
+function renderSaveResultComponent(saveResultCallback: () => void, isResultSaved: boolean) {
+  if(isResultSaved) {
+    return(
+        <Button className="flex-1" variant='outline' >
+          <ButtonText>Result Saved</ButtonText>
+        </Button>
+        )
+  }
+
+  return(
+    <Button
+        onPress={() => {
+          saveResultCallback();
+        }}
+        className="flex-1"
+    >
+      <ButtonText>Save and close</ButtonText>
+    </Button>
+  )
+}
 
 
 const ScanResultDrawer: React.FC<ScanResultDrawerProps> = ({ drawerState }) => {
-
   const [isXaiHeatmapShown, setXaiHeatmapShown] = useState(false);
-
   const isPredictionDone = drawerState.classification && drawerState.confidence && drawerState.imageUri;
 
   function handleSetXaiHeatmapShown(){
@@ -105,34 +124,23 @@ const ScanResultDrawer: React.FC<ScanResultDrawerProps> = ({ drawerState }) => {
                     />
                 )}
 
-
-                { drawerState.xaiHeatmapUri && (
+                {drawerState.xaiHeatmapUri && (
                     <Text className="mt-2 opacity-50 text-center">
                       {isXaiHeatmapShown ? ("Tap to view original Image") : ("Tap to view XAI Heatmap")}
                     </Text>
                 )}
               </Pressable>
-
             </Center>
-
           ) : (
               <>
                 <Skeleton variant="rounded" className="h-full w-full border  " />
               </>
-
           )}
         </DrawerBody>
 
         {drawerState.confidence && drawerState.classification && drawerState.imageUri && (
             <DrawerFooter>
-              <Button
-                  onPress={() => {
-                    drawerState.saveResultCallback();
-                  }}
-                  className="flex-1"
-              >
-                <ButtonText>Save and close</ButtonText>
-              </Button>
+              {renderSaveResultComponent(drawerState.saveResultCallback, drawerState.isResultSaved)}
             </DrawerFooter>
         ) }
 

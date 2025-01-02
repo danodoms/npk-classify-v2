@@ -30,7 +30,18 @@ import { useTfliteModel } from "@/src/hooks/useTfliteModel";
 import LottieView from "lottie-react-native";
 import { saveImageToAppData } from "@/src/lib/imageUtil";
 import * as Crypto from "expo-crypto";
-import {Circle, HelpCircleIcon, Scan, X} from "lucide-react-native";
+import {
+  Brain,
+  BrainCircuit,
+  BrainCog,
+  ChevronUp,
+  Circle,
+  HelpCircleIcon,
+  Images,
+  RefreshCw,
+  Scan,
+  X
+} from "lucide-react-native";
 import { width } from "dom-helpers";
 import { HStack } from "@/src/components/ui/hstack";
 import {useSupaLegend} from "@/src/utils/supalegend/useSupaLegend";
@@ -64,6 +75,7 @@ export default function ScanScreen() {
   const [cameraFacing, setCameraFacing] = useState<CameraPosition>("back");
   const [xaiHeatmapUri, setXaiHeatmapUri] = useState<string | null>(null);
   const [isError, setIsError] = useState<boolean>(false);
+  const [isResultSaved, setIsResultSaved] = useState<boolean>(false);
   const device = useCameraDevice(cameraFacing);
 
 
@@ -158,6 +170,7 @@ export default function ScanScreen() {
 
   const processImageAndClassify = async (imageUri: string) => {
     // Reset predictions and open the result drawer
+    setIsResultSaved(false)
     resetPrediction()
     setXaiHeatmapUri(null)
     setDrawerOpen(true);
@@ -268,6 +281,7 @@ export default function ScanScreen() {
 
     addResult(capturedImageUri, classification, confidence);
     setDrawerOpen(false)
+    setIsResultSaved(true)
   }
 
   function RenderButtonComponent() {
@@ -286,45 +300,68 @@ export default function ScanScreen() {
       );
 
     return (
-        <VStack>
+        <VStack className="p-4">
           <HStack className="gap-4 mb-4 flex justify-center items-center ">
-            <Pressable onPress={()=>setDrawerOpen(true)}>
-              <Text className="w-full bg-background font-bold text-lg">
-                Show Drawer
+
+          </HStack>
+
+          <HStack className="gap-4 mb-8 flex justify-center items-center ">
+            {/*<Pressable onPress={()=>setXaiEnabled(!isXaiEnabled)}>
+              <Text className="w-full bg-background font-bold">
+                {isXaiEnabled ? (
+                    "XAI Visualizations Enabled"
+                ):(
+                    "XAI Visualizations Disabled"
+                )}
               </Text>
-            </Pressable>
-          </HStack>
-          <HStack className="gap-4 mb-4 flex justify-center items-center ">
-            <Pressable onPress={()=>setXaiEnabled(!isXaiEnabled)}>
-                <Text className="w-full bg-background font-bold text-lg">
-                  {isXaiEnabled ? (
-                      "XAI Visualizations Enabled"
-                  ):(
-                      "XAI Visualizations Disabled"
-                  )}
-                </Text>
-            </Pressable>
-          </HStack>
-          <HStack className="gap-4 mb-4 flex justify-center items-center ">
-            {/* {device?.hasFlash && */}
-            <Button className="rounded-full">
-              <ButtonText>Toggle Flash</ButtonText>
+            </Pressable>*/}
+
+
+
+                {isXaiEnabled ? (
+                    <Button size="md" variant="solid" className="rounded-full" onPress={()=>setXaiEnabled(false)}>
+                      <ButtonText >Tab to disable XAI</ButtonText>
+                      <ButtonIcon as={BrainCog} />
+                    </Button>
+                ):(
+                    <Button size="md" variant="outline" className="rounded-full" onPress={()=>setXaiEnabled(true)}>
+                      <ButtonText >Tab to enable XAI</ButtonText>
+                      <ButtonIcon as={Brain} />
+                    </Button>
+                )}
+
+
+            <Button size="md" variant="solid" className="rounded-full" onPress={()=>setDrawerOpen(true)}>
+              <ButtonText >Show Drawer</ButtonText>
+              <ButtonIcon as={ChevronUp} />
             </Button>
 
-            <Button className="rounded-full" onPress={importImageAndClassify}>
-              <ButtonText>Import</ButtonText>
+
+          </HStack>
+
+          <HStack className="gap-16 mb-4 flex justify-center items-center border-red-500">
+            {/* {device?.hasFlash && */}
+            {/*<Button className="rounded-full">
+              <ButtonText>Toggle Flash</ButtonText>
+            </Button>*/}
+
+            <Button size="xl" variant="solid" className="rounded-full p-4" onPress={importImageAndClassify} >
+              <ButtonIcon size="xl" as={Images} />
             </Button>
 
             <Pressable onPress={captureAndClassify}>
-              <Box className="size-xl rounded-full border-4 border-white bg-transparent">
+              <Box className="size-20 rounded-full border-4 border-white bg-transparent">
                 <Scan className=""/>
               </Box>
             </Pressable>
 
 
-            <Button onPress={toggleCameraFacing} className="rounded-full">
-              <ButtonText>Flip Camera</ButtonText>
+
+            <Button size="xl"  variant="solid" className="rounded-full p-4" onPress={toggleCameraFacing}>
+              <ButtonIcon size="xl" as={RefreshCw} />
             </Button>
+
+
           </HStack>
         </VStack>
     );
@@ -332,7 +369,7 @@ export default function ScanScreen() {
 
   return (
     <VStack
-      className="bg-green p-4 outline-red-500 outline outline-1 h-full relative"
+      className="bg-green  outline-red-500 outline outline-1 h-full relative"
       reversed={true}
     >
       <Camera
@@ -354,8 +391,8 @@ export default function ScanScreen() {
 
       <ScanResultDrawer
         drawerState={{
-
           saveResultCallback: saveResultToDatabase,
+          isResultSaved,
           isDrawerOpen,
           isError,
           setDrawerOpen,
