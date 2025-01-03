@@ -3,15 +3,15 @@ import { Dimensions, Pressable } from "react-native";
 import { Text } from "@/src/components/ui/text";
 
 import {
-  Bot,
-  ChartScatter,
-  Leaf,
-  Scan,
-  Circle,
-  Sparkles,
-  Sparkle,
-  Image as ImageLucide,
-  GalleryHorizontal,
+    Bot,
+    ChartScatter,
+    Leaf,
+    Scan,
+    Circle,
+    Sparkles,
+    Sparkle,
+    Image as ImageLucide,
+    GalleryHorizontal, UserRound,
 } from "lucide-react-native";
 import { VStack } from "@/src/components/ui/vstack";
 import { Box } from "@/src/components/ui/box";
@@ -44,6 +44,7 @@ import { Center } from "@/src/components/ui/center";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { useSupaLegend } from "@/src/utils/supalegend/useSupaLegend";
 import { Link } from "expo-router";
+import {Icon} from "@/src/components/ui/icon"
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
@@ -64,13 +65,15 @@ export default function HomeScreen() {
 
         <Link href="/screens/account">
           <Avatar size="md" className="flex">
-            <AvatarFallbackText>John Doe</AvatarFallbackText>
+
+              <Icon as={UserRound} className="text-background-0"></Icon>
+            {/*<AvatarFallbackText>John Doe</AvatarFallbackText>*/}
             {/*<AvatarImage
               source={{
                 uri: "https://avatars.githubusercontent.com/u/165539900?v=4",
               }}
             />*/}
-            <AvatarBadge />
+            {/*<AvatarBadge />*/}
           </Avatar>
         </Link>
 

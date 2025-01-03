@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { supabase } from '@/src/utils/supabase'
 import Auth from '../../components/Auth'
 import Account from "@/src/components/Account"
@@ -13,6 +13,9 @@ import {Text} from "@/src/components/ui/text";
 import {Button, ButtonText} from "@/src/components/ui/button";
 import {Switch} from "@/src/components/ui/switch";
 import {Divider} from "@/src/components/ui/divider";
+import {Input, InputField} from "@/src/components/ui/input";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {globalStore} from "@/src/state/globalState";
 
 export default function AccountScreen() {
     const session = useSession()
@@ -21,8 +24,27 @@ export default function AccountScreen() {
     const [username, setUsername] = useState('')
     const [website, setWebsite] = useState('')
     const [avatarUrl, setAvatarUrl] = useState('')
+    const [backendAddress, setBackendAddress] = useState<string>("xr-vision-backend.onrender.com")
 
     const [showAuthScreen, setShowAuthScreen] = useState(false)
+
+    useEffect(() => {
+        // Load backend address from AsyncStorage on component mount
+        (async () => {
+            const storedAddress = await AsyncStorage.getItem('backendAddress');
+            if (storedAddress) {
+                setBackendAddress(storedAddress);
+            }
+        })();
+    }, []);
+
+
+    const handleBackendAddressChange = async (text: string) => {
+        setBackendAddress(text);
+        await AsyncStorage.setItem('backendAddress', text); // Save to AsyncStorage
+        globalStore.backendAddress.set(text);
+    };
+
 
     useEffect(() => {
         if (session) getProfile()
@@ -102,6 +124,8 @@ export default function AccountScreen() {
         )
     }
 
+    const API_URL = `https://${backendAddress}/generate-heatmap/`;
+
     return (
         <VStack className='align-items-center justify-start h-full gap-4 p-4 bg-background-0'>
             <HStack className='gap-4 border-0 border-background-100 border-opacity-50 rounded-md'>
@@ -163,6 +187,31 @@ export default function AccountScreen() {
 
 
 
+
+
+            <VStack className='gap-4 mt-4'>
+                <Text>Developer Config</Text>
+
+
+                <VStack className="w-full justify-center mb-4">
+                    <Input
+                        variant="underlined"
+                        size="md"
+                        isDisabled={false}
+                        isInvalid={false}
+                        isReadOnly={false}
+                    >
+                        <InputField placeholder="Enter Backend API address..." type="text" value={backendAddress} onChangeText={handleBackendAddressChange} />
+                    </Input>
+                </VStack>
+
+
+                <Text>{API_URL}</Text>
+            </VStack>
+
+
+
+
             <VStack className='gap-4 mt-4'>
                 <Text>About</Text>
 
@@ -178,6 +227,9 @@ export default function AccountScreen() {
                     <Text className='text-lg mr-auto'>Privacy Policy</Text>
                 </HStack>
             </VStack>
+
+
+
         </VStack>
     )
 }

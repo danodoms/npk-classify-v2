@@ -52,6 +52,11 @@ import { useToast, Toast,ToastTitle, ToastDescription } from '@/src/components/u
 import {Icon} from "@/src/components/ui/icon"
 import blobToBase64 from 'react-native-blob-util';
 import { fromByteArray } from 'base64-js';
+import { Input, InputField, InputIcon, InputSlot } from '@/src/components/ui/input';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {useSelector} from "@legendapp/state/react";
+import { globalStore } from "@/src/state/globalState";
+
 
 
 export default function ScanScreen() {
@@ -68,7 +73,6 @@ export default function ScanScreen() {
   } = useTfliteModel();
 
 
-  const [isTfReady, setIsTfReady] = useState(false);
   const cameraRef = useRef<Camera | null>(null);
   const [capturedImageUri, setCapturedImageUri] = useState<string | null>(null); // To hold the image URI
   const { hasPermission, requestPermission } = useCameraPermission();
@@ -77,6 +81,11 @@ export default function ScanScreen() {
   const [isError, setIsError] = useState<boolean>(false);
   const [isResultSaved, setIsResultSaved] = useState<boolean>(false);
   const device = useCameraDevice(cameraFacing);
+  const[isXaiEnabled, setXaiEnabled] = useState(false);
+  const [isDrawerOpen, setDrawerOpen] = useState(false)
+
+  const backendAddress = useSelector(() => globalStore.backendAddress.get());
+
 
 
 
@@ -120,18 +129,16 @@ export default function ScanScreen() {
   }
 
 /*const API_URL = "http://10.0.2.2:8000/generate-heatmap/";*/
-  const API_URL = "https://xr-vision-backend.onrender.com/generate-heatmap/";
+/*  const API_URL = "https://xr-vision-backend.onrender.com/generate-heatmap/";*/
+  const API_URL = `https://${backendAddress}/generate-heatmap/`;
 
-  const[isXaiEnabled, setXaiEnabled] = useState(false);
-  const [isDrawerOpen, setDrawerOpen] = useState(false);
+
 
   const {addResult} = useSupaLegend()
 
   // Ensure TensorFlow is ready before classifying
   useEffect(() => {
     const initializeTf = async () => {
-      // await tf.ready();
-      setIsTfReady(true);
       await loadModel(); // Load the model when TensorFlow is ready
     };
     initializeTf();
@@ -210,13 +217,6 @@ export default function ScanScreen() {
           setConfidence((parseFloat(response.headers["prediction-confidence"]*100)).toFixed(2));
           setClassification(response.headers["prediction-label"])
 
-         /* //handle cases where endpoint body is empty
-          if(!response.data || !response.data.length){
-            console.log("endpoint didnt return gradcam image");
-            setXaiHeatmapUri(null)
-            return
-          }*/
-
           const bytes = new Uint8Array(response.data);
           const base64String = fromByteArray(bytes);
           const imageUri = `data:image/jpeg;base64,${base64String}`;
@@ -285,38 +285,21 @@ export default function ScanScreen() {
   }
 
   function RenderButtonComponent() {
-   /* if (!isTfReady)
-      return (
-        <Text size="lg" className="text-center font-bold">
-          Loading AI Model...
-        </Text>
-      );*/
-
-    /*if (isModelPredicting)
-      return (
-        <Text size="lg" className="text-center font-bold">
-          Classifying Image...
-        </Text>
-      );*/
 
     return (
         <VStack className="p-4">
-          {/*<HStack className="gap-4 mb-4 flex justify-center items-center w-full ">
-            <Text className="font-medium opacity-80">Loading Model...</Text>
-          </HStack>*/}
 
           <HStack className="gap-4 mb-8 flex justify-center items-center w-full ">
-                {isXaiEnabled ? (
-                    <Button size="md" variant="solid" className="rounded-full" onPress={()=>setXaiEnabled(false)}>
-                      <ButtonText >Disable XAI</ButtonText>
-                      <ButtonIcon as={BrainCog} />
-                    </Button>
-                ):(
-                    <Button size="md" variant="outline" className="rounded-full" onPress={()=>setXaiEnabled(true)}>
-                      <ButtonText >Enable XAI</ButtonText>
-                      <ButtonIcon as={Brain} />
-                    </Button>
-                )}
+            <Button
+                size="md"
+                variant={isXaiEnabled ? "solid" : "outline"}
+                className="rounded-full"
+                onPress={() => setXaiEnabled(!isXaiEnabled)}
+            >
+              <ButtonText>{isXaiEnabled ? "Disable XAI" : "Enable XAI"}</ButtonText>
+              <ButtonIcon as={isXaiEnabled ? BrainCog : Brain} />
+            </Button>
+
             <Button size="md" variant="solid" className="rounded-full" onPress={()=>setDrawerOpen(true)}>
               {/*<ButtonText >Show Drawer</ButtonText>*/}
               <ButtonIcon as={ChevronUp} />
@@ -324,11 +307,6 @@ export default function ScanScreen() {
           </HStack>
 
           <HStack className="mb-4 flex justify-evenly items-center border-red-500">
-            {/* {device?.hasFlash && */}
-            {/*<Button className="rounded-full">
-              <ButtonText>Toggle Flash</ButtonText>
-            </Button>*/}
-
             <Button size="xl" variant="solid" className="rounded-full p-4" onPress={importImageAndClassify} >
               <ButtonIcon size="xl" as={Images} />
             </Button>
@@ -349,8 +327,7 @@ export default function ScanScreen() {
 
   return (
     <VStack
-      className="bg-green  outline-red-500 outline outline-1 h-full relative"
-      reversed={true}
+      className="bg-green h-full relative justify-between"
     >
       <Camera
         device={device}
@@ -366,6 +343,13 @@ export default function ScanScreen() {
         photo={true}
         /*  frameProcessor={frameProcessor}*/
       />
+
+      {/*FOR DEVELOPERS*/}
+      <VStack className="w-full justify-center mb-4 opacity-50 pt-20">
+        <Text className="font-medium text-xs text-center">XAI is using this API route, modify it in accounts page</Text>
+        <Text className="text-xs text-center">{API_URL}</Text>
+      </VStack>
+
 
       <RenderButtonComponent />
 
