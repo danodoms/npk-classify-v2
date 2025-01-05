@@ -54,8 +54,10 @@ import blobToBase64 from 'react-native-blob-util';
 import { fromByteArray } from 'base64-js';
 import { Input, InputField, InputIcon, InputSlot } from '@/src/components/ui/input';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {useSelector} from "@legendapp/state/react";
+import {use$, useSelector} from "@legendapp/state/react";
 import { globalStore } from "@/src/state/globalState";
+import {global} from "expo-modules-core/src/ts-declarations/ExpoModules";
+import {useSupabase} from "@/src/utils/useSupabase";
 
 
 
@@ -72,6 +74,8 @@ export default function ScanScreen() {
     runModelPrediction,
   } = useTfliteModel();
 
+  const syncLocalImagesToRemoteDatabase = useSupabase()
+
 
   const cameraRef = useRef<Camera | null>(null);
   const [capturedImageUri, setCapturedImageUri] = useState<string | null>(null); // To hold the image URI
@@ -84,7 +88,8 @@ export default function ScanScreen() {
   const[isXaiEnabled, setXaiEnabled] = useState(false);
   const [isDrawerOpen, setDrawerOpen] = useState(false)
 
-  const backendAddress = useSelector(() => globalStore.backendAddress.get());
+  const backendAddress = use$(globalStore.backendAddress);
+  /*const backendAddress = AsyncStorage.getItem('backendAddress');*/
 
 
 
@@ -226,7 +231,10 @@ export default function ScanScreen() {
           console.error("Error calling XAI API:", error);
           showNetworkErrorToast()
         });
-    }
+
+
+
+  }
 
 
   const captureAndClassify = async () => {
@@ -282,6 +290,7 @@ export default function ScanScreen() {
     addResult(capturedImageUri, classification, confidence);
     setDrawerOpen(false)
     setIsResultSaved(true)
+    syncLocalImagesToRemoteDatabase()
   }
 
   function RenderButtonComponent() {

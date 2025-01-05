@@ -34,6 +34,7 @@ export default function AccountScreen() {
             const storedAddress = await AsyncStorage.getItem('backendAddress');
             if (storedAddress) {
                 setBackendAddress(storedAddress);
+                globalStore.backendAddress.set(storedAddress);
             }
         })();
     }, []);

@@ -13,6 +13,8 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 
 import { useColorScheme } from "@/src/hooks/useColorScheme";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {globalStore} from "@/src/state/globalState";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -26,12 +28,26 @@ export default function RootLayout() {
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
+
+
+      //FOR DEBUG ONLY REMOVE IF CUSTOM BACKEND ADDRESS IS NOT NEEDED
+      (async () => {
+        const storedAddress = await AsyncStorage.getItem('backendAddress');
+        if (storedAddress) {
+          globalStore.backendAddress.set(storedAddress);
+        }
+      })();
+      //FOR DEBUG ONLY REMOVE IF CUSTOM BACKEND ADDRESS IS NOT NEEDED
+
+
     }
   }, [loaded]);
 
   if (!loaded) {
     return null;
   }
+
+
 
   return (
     <GluestackUIProvider mode={(colorScheme ?? "light") as "light" | "dark"}>

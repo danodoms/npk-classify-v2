@@ -9,7 +9,7 @@ export const saveImageToAppData = async (
   imageUri: string,
   fileName: string
 ) => {
-  const destinationUri = documentDirectory + `images/${fileName}`;
+  const destinationUri = documentDirectory + `images/${fileName}.jpg`;
   try {
     await makeDirectoryAsync(documentDirectory + "images", {
       intermediates: true,
@@ -24,6 +24,7 @@ export const saveImageToAppData = async (
   }
 };
 
+
 export const getScanResultImageUriFromResultId = (resultId: string) => {
-  return FileSystem.documentDirectory + "images/" + resultId;
+  return FileSystem.documentDirectory + "images/" + resultId + ".jpg";
 };
