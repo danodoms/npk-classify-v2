@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSystem } from "@/src/powersync/PowerSync";
 import * as Crypto from "expo-crypto";
 import * as FileSystem from "expo-file-system";
@@ -24,9 +24,14 @@ import { observable, observe } from "@legendapp/state";
 import { enableReactTracking } from "@legendapp/state/config/enableReactTracking";
 import {useSupaLegend} from "@/src/utils/supalegend/useSupaLegend";
 import {Center} from "@/src/components/ui/center";
+import {Icon} from "@/src/components/ui/icon"
+import {Brain, BrainCog, RefreshCw, Trash, X} from "lucide-react-native";
+import { GestureHandlerRootView, Swipeable} from 'react-native-gesture-handler';
 
 export default function ResultsScreen() {
   const { results, clearResults } = useSupaLegend();
+
+  const [isItemSwiped, setIsItemSwiped] = useState(false);
 
   /*console.log(topClassifications);*/
 
@@ -79,43 +84,66 @@ export default function ResultsScreen() {
     )
   }
 
+  const renderRightActions = (id: string, onDelete: (id: string) => void) => {
+    return (
+        <Center className="p-4 rounded-md">
+          <Button
+              size="md"
+              variant="solid"
+              action="negative"
+              onPress={() => onDelete(id)} // Trigger delete action
+              className="rounded-md"
+          >
+            <ButtonIcon as={Trash} />
+            <ButtonText>Delete</ButtonText>
+          </Button>
+        </Center>
+
+    );
+  };
+
+  // Delete result from the state and file system
+  const onDelete = async (id: string) => {
+    console.log("test")
+  };
+
 
   return (
-    <VStack className="gap-4 pt-20 bg-background-0 border-green-500 h-full">
-      {/*<Text>Total Results: {Object.keys(results).length}</Text>
-      <HStack className="gap-4 items-center w-full">
-        <Button onPress={listFiles} className="flex flex-auto">
-          <ButtonText>Log Captured Images</ButtonText>
-        </Button>
-
-        <Button onPress={clearResults} className="flex flex-auto">
-          <ButtonText>Reset Database</ButtonText>
-        </Button>
-      </HStack>*/}
-
-      <VStack className=" border-red-500 rounded-md">
-        <ScrollView className='flex gap-8'>
+      <VStack className="gap-4 pt-20 bg-background-0 border-green-500 h-full">
+        <ScrollView className="flex gap-4">
+          <GestureHandlerRootView >
           {results.map((result) => (
-            <HStack key={result.id} className="gap-4 border-red-500 px-4 py-2">
-              <Image
-                className="rounded-md border-white-50 border-2"
-                source={{
-                  uri: getScanResultImageUriFromResultId(result.id),
-                }}
-                alt="image-result"
-              ></Image>
 
-              <VStack>
-                <Text className="font-bold text-lg">
-                  {result.classification}
-                </Text>
-                <Text className="opacity-50">{result.confidence}% Confidence</Text>
-                <Text className="opacity-50 text-sm">{result.created_at && formatTimestamp(result.created_at || "", false)}</Text>
-              </VStack>
-            </HStack>
+              <Swipeable
+                  key={result.id}
+                  renderRightActions={() => renderRightActions(result.id, onDelete)} // Swipe actions
+               /*   onSwipeableOpen={direction:"right" swipeable: ()=>setIsItemSwiped(true)}*/
+              >
+                <HStack className="gap-4 border-red-500 px-4 py-2 rounded-lg items-center">
+                  <Image
+                      className="rounded-md border-white-50 border-2"
+                      source={{
+                        uri: getScanResultImageUriFromResultId(result.id),
+                      }}
+                      alt="image-result"
+                  />
+
+                  <VStack className="border-green-500">
+                    <Text className="font-bold text-lg">{result.classification}</Text>
+                    <Text className="opacity-50">{result.confidence}% Confidence</Text>
+                    <Text className="opacity-50 text-sm">
+                      {result.created_at && formatTimestamp(result.created_at || '', false)}
+                    </Text>
+
+                  {/*  <Text className="opacity-50 text-sm">Swipe right to delete</Text>*/}
+                  </VStack>
+                </HStack>
+              </Swipeable>
+
           ))}
+          </GestureHandlerRootView>
         </ScrollView>
       </VStack>
-    </VStack>
+
   );
 }
