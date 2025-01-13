@@ -106,6 +106,17 @@ export const addResult = (
     saveImageToAppData(capturedImageUri, id);
 };
 
+// Function to delete a result
+export const deleteResult = (results$: ResultsObservable, id: string) => {
+    if (results$[id]) {
+        results$[id].assign({ deleted: true }); // Mark the record as deleted
+        console.log(`RESULT DELETED: ${id}`);
+    } else {
+        console.error(`No result found with ID: ${id}`);
+    }
+};
+
+
 
 
 
