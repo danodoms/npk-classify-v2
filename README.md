@@ -1,50 +1,44 @@
-# Welcome to your Expo app 👋
+# 🌾 **XR Vision**  
+**AI-Powered Rice Leaf NPK Deficiency Detector**  
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+> Unlock the potential of precision agriculture with XR Vision, a cutting-edge Expo React Native app designed to analyze NPK deficiencies in rice leaves.  
 
-## Get started
+---
 
-1. Install dependencies
+## 🚀 **Features**  
 
-   ```bash
-   npm install
-   ```
+### 📊 **Home Screen**  
+- **Quick Overview**: View a preview of past analysis results.  
+- **Statistics**: See the total count of analyzed results for a snapshot of your field's health.  
 
-2. Start the app
+### 📸 **Scan Screen**  
+- **Capture or Import**:  
+  - Use your device camera to capture rice leaf images directly.  
+  - Alternatively, import images from your gallery for quick analysis.  
 
-   ```bash
-    npx expo start
-   ```
+### 🧾 **Result Screen**  
+- **Detailed Analysis**: View all results, including NPK deficiency status and confidence levels.  
+- **Track History**: Keep a record of your analysis for future reference.  
 
-In the output, you'll find options to open the app in a
+### 👤 **Accounts**  
+- **Login & Sync**:  
+  - Securely log in to manage your account.  
+  - Sync your data across devices for seamless access.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 🛠️ **Tech Stack**  
 
-## Get a fresh project
+- **Framework**: [Expo](https://expo.dev/) (React Native)  
+- **State Management**: Legend State
+- **Backend**: Supabase 
+- **Database**: MMKV Storage with Legend State
 
-When you're ready, run:
+---
 
-```bash
-npm run reset-project
-```
+## 🌟 **Why XR Vision?**  
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- **AI-Powered Precision**: Leverages advanced models to accurately detect nitrogen (N), phosphorus (P), and potassium (K) deficiencies.  
+- **User-Friendly**: Intuitive interface designed for quick navigation.  
+- **Data Security**: Accounts feature ensures your data is safe and synced.  
+- **Offline Capability**: Analyze and store results offline, perfect for fieldwork.  
